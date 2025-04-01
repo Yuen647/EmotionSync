@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Matching Game</title>
+    <link rel="shortcut icon" type="image/jpg" href="Images/fevicon.PNG" />
+    <link rel="stylesheet" href="gameStyle.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"> </script>
+    <script src="gameScript.js"> </script>
+</head>
+
+<body>
+    <div id="ol"> </div>
+    <div style="height: 8px;"></div>
+
+    <!-- Title and Game Info -->
+    <div id="title">
+        <span id="logo">MEMORY MATCHING GAME</span>
+    </div>
+
+    <div id="title" style="height: 40px;">
+        <span id="moves"></span>
+        <span id="time"></span>
+    </div>
+
+    <center>
+        <table cellspacing="0"></table>
+    </center>
+    <button onclick="window.close()" class="styled-button">玩累了，休息一会儿</button>
+    <style>
+        .styled-button {
+            background-color: #46bfc5;
+            /* 绿色背景 */
+            color: white;
+            /* 白色文字 */
+            padding: 15px 3px;
+            /* 上下内边距15px，左右内边距3px */
+            text-align: center;
+            /* 文字居中 */
+            text-decoration: none;
+            /* 去掉下划线 */
+            display: inline-block;
+            /* 内联块级元素 */
+            font-size: 16px;
+            /* 字体大小 */
+            border: none;
+            /* 去掉边框 */
+            border-radius: 8px;
+            /* 圆角效果 */
+            cursor: pointer;
+            /* 鼠标悬停时显示手型 */
+            transition: background-color 0.3s ease;
+            /* 背景颜色平滑过渡 */
+        }
+
+        .styled-button:hover {
+            background-color: #456fa0;
+            /* 悬停时背景颜色变深 */
+        }
+
+        .styled-button:focus {
+            outline: none;
+            /* 去掉焦点时的边框 */
+        }
+    </style>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+{
+    "$schema": "./faa.schema.json",
+    "about": {
+        "title": "ZenZone",
+        "subtitle": "让压力释放，休闲就在这里。",
+        "poster": "/faa/src/assets/HeroImage.jpg",
+        "blocks": [
+            {
+                "type": "about",
+                "data": {
+                    "title": "关于ZenZone",
+                    "content": "“ZenZone——禅意地带”旨在通过一系列互动功能和解压游戏，为用户提供放松、愉悦的数字解压体验。项目基于Web端开发，结合一系列如：实时AI对话、音乐放松、励志语录、休闲游戏（互动游戏）等功能。为用户提供一个综合的情感支持和休闲娱乐平台，帮助他们在繁忙的生活中找到放松和治愈的空间。同时，项目支持为专业的相关领域研究者（心理医生、学者）提供可视化、结构化的数据支持，以帮助他们在数据分析和用户情绪健康方面开展深入研究，为用户提供更多科学依据和有效的情绪管理建议。"                }
+            },
+            {
+                "type": "purpose",
+                "data": {
+                    "title": "我能得到什么",
+                    "items": [
+                        {
+                            "image": "/faa/src/assets/placeholder3.png",
+                            "title":"作为一个普通用户",
+                            "content": "1.创建一个个人账户保存个人信息。\n2.通过一系列互动功能和解压游戏，释放个人压力，缓解疲劳。\n3.查看个人信息报告，追踪个人心态和压力变化。"
+                            },
+                        {
+                            "image": "/faa/src/assets/placeholder4.png",
+                            "title":"作为一个相关研究者", 
+                            "content": "1.能够访问平台的用户情绪数据和使用行为的可视化图表。\n2.能生成匿名用户行为报告。\n3.能管理用户数据、内容推荐，为用户提供高质量的内容。"
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "functions",
+                "data": {
+                    "title": "我能体验什么",
+                    "items": [
+                        {
+                            "image": "/faa/src/assets/AIchat.png",
+                            "poster": "/faa/src/assets/AIposter.png",
+                            "title": "AI实时对话",
+                            "content": "AI实时对话可以提供即时的情感支持、无压力的互动体验以及无时无刻的陪伴,为用户提供情绪疏导和心理支持，帮助缓解压力、放松心情，提升情绪稳定性。"
+                       },
+                        {
+                            "image": "/faa/src/assets/game.jpg",
+                            "poster": "/faa/src/assets/gameposter.png",
+                            "title": "解压小游戏",
+                            "content": "解压小游戏通过简单、愉悦和富有反馈性的游戏机制，帮助用户暂时脱离压力环境，缓解紧张情绪，也可以把注意力从压力源上转移开来。"
+                       },
+                        {
+                            "image": "/faa/src/assets/test.png",
+                            "poster": "/faa/src/assets/testposter.png",
+                            "title": "心理小测试",
+                            "content": "心理小测试通过一系列精心设计的问题，对用户的个性特征、情绪状态、兴趣偏好等方面进行评估，基于心理学理论和统计学分析帮助用户了解自己，为情绪管理和行为改善提供指导。"
+                        },
+                        {
+                            "image": "/faa/src/assets/whitenoise.png",
+                            "poster": "/faa/src/assets/whitenoiseposter.png",
+                            "title": "解压白噪声",
+                            "content": "解压白噪声通过稳定、平缓的音频刺激来安抚神经系统，减轻压力和焦虑，同时通过掩盖噪音、平稳情绪、联想到自然环境等方式，为听者带来心理上的平静和身体上的放松效果。"
+                       }
+                    ]
+                }
+            }
+        ]
+    },
+    "apply": {
+        "title": "AI实时对话"
+    },
+    "contact": {
+        "telephone": "+86 755 1234 5678",
+        "email": "registration@FuturismAI.Com",
+        "address": "123 Main Street, Futian District, Shenzhen, Guangdong, China",
+        "faqs": [
+            {
+                "question": "Is there a registration fee for the education event?",
+                "answer": "Yes, there is a registration fee to participate in the education event. The fee varies depending on the type of participant (student, educator, professional) and the registration package chosen. Please refer to the registration section on our website for more details."
+            },
+            {
+                "question": "Is there a registration fee for the education event?",
+                "answer": "Yes, there is a registration fee to participate in the education event. The fee varies depending on the type of participant (student, educator, professional) and the registration package chosen. Please refer to the registration section on our website for more details."
+            },
+            {
+                "question": "Is there a registration fee for the education event?",
+                "answer": "Yes, there is a registration fee to participate in the education event. The fee varies depending on the type of participant (student, educator, professional) and the registration package chosen. Please refer to the registration section on our website for more details."
+            },
+            {
+                "question": "Is there a registration fee for the education event?",
+                "answer": "Yes, there is a registration fee to participate in the education event. The fee varies depending on the type of participant (student, educator, professional) and the registration package chosen. Please refer to the registration section on our website for more details."
+            },
+            {
+                "question": "Is there a registration fee for the education event?",
+                "answer": "Yes, there is a registration fee to participate in the education event. The fee varies depending on the type of participant (student, educator, professional) and the registration package chosen. Please refer to the registration section on our website for more details."
+            }
+        ]
+    },
+    "donation": {
+        "image": "/faa/src/assets/placeholder9.png",
+        "content": "<div style=\"display: flex; flex-direction: column; gap: 32px;\"><div style=\"display: flex; flex-direction: column; gap: 24px;\"><div style=\"font-size: 17px; font-weight: 600;\">Support the Future of Innovation and Talent</div><div style=\"color: rgb(86, 98, 115); font-size: 15px;\">Hong Kong TSAF Consulting Ltd.warmly invites you to support the Futurism AI Award(FAA),Dynamic Art Award(DAA),and Cosmopolitan Writing Award(CWA),together shaping the future of technology,art,and literature.</div></div><div style=\"display: flex; flex-direction: column; gap: 24px;\"><div style=\"font-size: 17px; font-weight: 600;\">Your Impact</div><div style=\"color: rgb(86, 98, 115); font-size: 15px;\">At the heart of our efforts is the vision to foster a new generation of innovators,artists,and writers who can think diversely,act fairly,and contribute to their communities.By donating to these awards,you're not just funding a prize; you're investing in the future leaders of innovation,art,and literature.</div></div><div style=\"display: flex; flex-direction: column; gap: 24px;\"><div style=\"font-size: 17px; font-weight: 600;\">Awards&Recognition</div><div style=\"color: rgb(86, 98, 115); font-size: 15px;\">Winners of these prestigious awards Winners of these prestigious awards gain global recognition,media exposure,and opportunities for professional and academic advancement.Your donation directly contributes to the certificates of achievement,letters of recommendation,and promotion of their innovative work.</div></div><div style=\"display: flex; flex-direction: column; gap: 24px;\"><div style=\"font-size: 17px; font-weight: 600;\">How to Donate</div><div style=\"color: rgb(86, 98, 115); font-size: 15px;\">Initiate Your Contribution:To support the Futurism AI Award(FAA),Dynamic Art Award(DAA),or the Cosmopolitan Writing Award(CWA),simply send us an email expressing your interest in donating.Whether you wish to contribute to a specific award or to the general fund affecting all awards,your support is invaluable.Contact Us:Email us at[support@FuturismAI.Com]with the subject line\"Donation Inquiry.\"Please include your name,contact information,and any specific award you're interested in supporting or if you'd prefer to contribute to the general fund.Personalized Support:Our dedicated support team will get back to you promptly to guide you through the donation process.We're here to ensure your contribution is processed smoothly and to answer any questions you may have about the impact of your donation.</div></div></div>"
+    },
+    "footer": {
+        "links": [
+            {
+                "title": "同济大学官网",
+                "href": "https://www.tongji.edu.cn/"
+            },
+            {
+                "title": "本项目github地址",
+                "href": "https://github.com/Tonywang2004/TJZenZone/"
+            }
+        ]
+    }
+}

@@ -1,2 +1,2 @@
-# TJZenZone
-同济大学软件工程项目，一个网页版集成式心理放松网站
+# EmotionSync
+"EmotionSync" is an intelligent emotion management platform designed to enhance users’ mental well-being through technological means. The project integrates various innovative features to assist users in regulating their emotions in daily life. The highlight of the project is a meticulously crafted digital human module—an empathetic AI virtual companion capable of providing emotional companionship and personalized support through natural interaction. Additionally, the platform will explore emotion-related auxiliary functionalities, with an overall design focused on scalability and user experience, reflecting principles of software engineering management and economic feasibility

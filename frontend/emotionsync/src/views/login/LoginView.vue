@@ -133,6 +133,7 @@
             登录
           </el-button>
         </div>
+        
       </template>
       <template v-if="type === 'register'">
 

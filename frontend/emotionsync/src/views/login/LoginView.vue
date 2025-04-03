@@ -5,6 +5,7 @@
       <div class="text-[22px] font-bold">
         {{ type === 'login' ? '登录' : type === 'register' ? '注册' : '重设密码' }}
       </div>
+      <!--表示切换登录/注册/修改密码状态-->
       <div class="text-right text-[rgba(0,0,0,0.65)] text-[14px]">
         <template v-if="type === 'login'">
           没有账号？<span class="text-[#0EB698] cursor-pointer" @click="toggleMode">
@@ -25,25 +26,7 @@
       <div v-if="type === 'reset-password' && waitVerify" class="text-[rgba(0,0,0,0.85)] text-[14px]">
         设置一个新的密码
       </div>
-      <el-input type="email" v-model="form.email" style="--el-color-primary: #0EB698"
-                v-if="type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify)">
-        <template #prefix>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 14.9983H16.3333V9.99829V4.99829H9.66667H3V9.99829V14.9983Z" fill="#0EB698"
-                  fill-opacity="0.2" stroke="#4C4C4C" stroke-linejoin="round" />
-            <path d="M3 4.99829L9.66667 9.99829L16.3333 4.99829" fill="#0EB698" fill-opacity="0.2" />
-            <path d="M3 4.99829L9.66667 9.99829L16.3333 4.99829" stroke="#4C4C4C" stroke-linecap="round"
-                  stroke-linejoin="round" />
-            <path d="M9.66667 4.99829H3V9.99829" fill="#0EB698" fill-opacity="0.2" />
-            <path d="M9.66667 4.99829H3V9.99829" stroke="#4C4C4C" stroke-linecap="round"
-                  stroke-linejoin="round" />
-            <path d="M16.3334 9.99829V4.99829H9.66675" fill="#0EB698" fill-opacity="0.2" />
-            <path d="M16.3334 9.99829V4.99829H9.66675" stroke="#4C4C4C" stroke-linecap="round"
-                  stroke-linejoin="round" />
-          </svg>
-          <div class="ml-[8px] w-[70px] text-left">邮箱</div>
-        </template>
-      </el-input>
+
 
       <el-input type="text" v-model="form.username" style="--el-color-primary: #0EB698"
                 v-if="type === 'login' || (type === 'reset-password' && !waitVerify) || (type === 'register' && !waitVerify)">
@@ -105,6 +88,36 @@
         </div>
         -->
       </template>
+      <el-input type="email" v-model="form.email" style="--el-color-primary: #0EB698"
+                v-if="type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify)">
+        <template #prefix>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 14.9983H16.3333V9.99829V4.99829H9.66667H3V9.99829V14.9983Z" fill="#0EB698"
+                  fill-opacity="0.2" stroke="#4C4C4C" stroke-linejoin="round" />
+            <path d="M3 4.99829L9.66667 9.99829L16.3333 4.99829" fill="#0EB698" fill-opacity="0.2" />
+            <path d="M3 4.99829L9.66667 9.99829L16.3333 4.99829" stroke="#4C4C4C" stroke-linecap="round"
+                  stroke-linejoin="round" />
+            <path d="M9.66667 4.99829H3V9.99829" fill="#0EB698" fill-opacity="0.2" />
+            <path d="M9.66667 4.99829H3V9.99829" stroke="#4C4C4C" stroke-linecap="round"
+                  stroke-linejoin="round" />
+            <path d="M16.3334 9.99829V4.99829H9.66675" fill="#0EB698" fill-opacity="0.2" />
+            <path d="M16.3334 9.99829V4.99829H9.66675" stroke="#4C4C4C" stroke-linecap="round"
+                  stroke-linejoin="round" />
+          </svg>
+          <div class="ml-[8px] w-[70px] text-left">邮箱</div>
+        </template>
+      </el-input>
+      <!-- 输入验证码-->
+      <el-input v-model="form.code" type="text" placeholder="输入验证码" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">
+        <template #prefix>
+          <div class="ml-[8px] w-[70px] text-left">验证码</div>
+        </template>
+      </el-input>
+      <!-- 发送验证码按钮 -->
+      <el-button type="primary" :disabled="!form.email" @click="sendCode" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">发送验证码</el-button>
+
+      <!-- 验证验证码按钮 -->
+      <el-button type="primary" :disabled="!form.code" @click="verifyCode" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">验证验证码</el-button>
       <br>
       <div v-if="(type === 'register' && !waitVerify) || (type === 'reset-password' && waitVerify)"
            class='opacity-35 text-left text-[14px]'>密码请输入至少6个字符，包括字母和数字</div>
@@ -148,7 +161,8 @@ import axios from 'axios';
 import { useUserStore } from '@/store/userStore';
 const router = useRouter();
 const type = ref<'login' | 'register' | 'reset-password'>('login')
-const waitVerify = ref(false)
+const showVerifyInput = ref(false); // 控制验证码输入框是否显示
+const waitVerify = ref(false);  // 控制是否在等待验证码验证
 const route = useRoute()
 const userStore = useUserStore();
 
@@ -156,6 +170,7 @@ const form = reactive({
   email: '',
   username: '',
   password: '',
+  code: '',
 });
 
 const buttonStyle = {
@@ -220,6 +235,40 @@ const handleResetPasswordEmail = async () => {
   } catch (error) {
     console.error('重置密码失败:', error);
     alert(error.response.data.message || '网络错误，请稍后再试');
+  }
+};
+
+// 发送验证码
+const sendCode = async () => {
+  try {
+    const response = await axios.post('http://localhost:9000/myHello/send-code', { email: form.value.email });
+    if (response.data.success) {
+      alert('验证码发送成功，请查收');
+      showVerifyInput.value = true;  // 显示验证码输入框
+    } else {
+      alert(response.data.message || '验证码发送失败');
+    }
+  } catch (error) {
+    console.error('发送验证码失败:', error);
+    alert(error.response?.data.message || '网络错误，请稍后再试');
+  }
+};
+// 验证验证码
+const verifyCode = async () => {
+  try {
+    const response = await axios.post('http://localhost:9000/myHello/verify-code', {
+      email: form.value.email,
+      code: form.value.code,
+    });
+    if (response.data.success) {
+      alert('验证码验证成功');
+      waitVerify.value = false;  // 验证成功后可以继续注册/重置密码流程
+    } else {
+      alert(response.data.message || '验证码验证失败');
+    }
+  } catch (error) {
+    console.error('验证验证码失败:', error);
+    alert(error.response?.data.message || '网络错误，请稍后再试');
   }
 };
 

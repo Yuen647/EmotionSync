@@ -29,9 +29,9 @@ const router = createRouter({
                     component: AboutView,
                 },
                 {
-                    name: 'AIchat',
+                    name: 'AIDigitalHuman',
                     meta: {
-                        title: '实时AI对话',
+                        title: 'AI数字人',
                     },
                     path: 'AIchat',
                     component: ApplyView,
@@ -45,7 +45,7 @@ const router = createRouter({
                     component: GameView,
                 },
                 {
-                    name: 'quizselection',
+                    name: 'diary',
                     meta: {
                         title: '心理小测试',
                     },

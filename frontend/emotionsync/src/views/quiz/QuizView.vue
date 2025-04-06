@@ -128,7 +128,7 @@ const restartTest = () => {
 };
 
 const goMenu = () => {
-  router.push({ name: 'quizselection' });
+  router.push({ name: 'diary' });
 }
 
 const getColor = (level: number) => {

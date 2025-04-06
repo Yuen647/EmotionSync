@@ -57,9 +57,9 @@ const userStore = useUserStore();
 const router = useRouter();
 const menus = [
   { title: '首页', name: 'about' },
-  { title: '实时AI对话', name: 'AIchat' },
+  { title: 'AI数字人', name: 'AIDigitalHuman' },
   { title: '解压小游戏', name: 'game' },
-  { title: '心理小测试', name: 'quizselection' },
+  { title: '个人日记', name: 'diary' },
   { title: '解压白噪声', name: 'whitenoise' },
 ]
 const showUserInfoModal = ref(false); // 控制弹窗的显示与隐藏

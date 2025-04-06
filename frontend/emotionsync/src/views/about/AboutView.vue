@@ -2,7 +2,7 @@
     <div class="w-[1353px] mx-auto bg-[#F9F9F9]">
         <div class="flex flex-col items-center mt-[37px]">
             <div :style="{ backgroundImage: 'radial-gradient(61.56% 210.76% at 86.77% 21.09%, #CAB088 0%, #435764 28.5%, #242B30 100%)' }"
-                class="font-bold w-fit bg-clip-text text-[56px] text-transparent">
+                class="font-bold w-fit bg-clip-text text-[30px] text-transparent">
                 {{ config.about.title }}</div>
             <div
                 class="bg-gradient-to-r from-[#223441] from-[63.86%] via-[#435764] to-[#CAB088] mt-[7px] w-fit bg-clip-text text-[32px] text-transparent">

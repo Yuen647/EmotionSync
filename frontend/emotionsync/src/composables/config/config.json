@@ -1,15 +1,16 @@
 {
     "$schema": "./faa.schema.json",
     "about": {
-        "title": "ZenZone",
-        "subtitle": "让压力释放，休闲就在这里。",
+        "title": "EmotionSync: Intelligent Emotion Management Platform",
+        "subtitle": "身心同步：智能情绪管理平台",
         "poster": "/faa/src/assets/HeroImage.jpg",
         "blocks": [
             {
                 "type": "about",
                 "data": {
-                    "title": "关于ZenZone",
-                    "content": "“ZenZone——禅意地带”旨在通过一系列互动功能和解压游戏，为用户提供放松、愉悦的数字解压体验。项目基于Web端开发，结合一系列如：实时AI对话、音乐放松、励志语录、休闲游戏（互动游戏）等功能。为用户提供一个综合的情感支持和休闲娱乐平台，帮助他们在繁忙的生活中找到放松和治愈的空间。同时，项目支持为专业的相关领域研究者（心理医生、学者）提供可视化、结构化的数据支持，以帮助他们在数据分析和用户情绪健康方面开展深入研究，为用户提供更多科学依据和有效的情绪管理建议。"                }
+                    "title": "关于EmotionSync",
+                    "content": "EmotionSync 是一个结合人工智能与数字人技术的情绪管理平台，旨在解决当今社会中因工作压力和人际关系复杂所带来的情绪困扰。面对现有解决方案成本高、缺乏个性化的问题，EmotionSync 提供实时互动与个性化支持，帮助用户更高效地调节情绪、维护心理健康。同时，其高效的软件架构与经济性的设计也为平台带来了广阔的商业应用前景。"                
+                }
             },
             {
                 "type": "purpose",
@@ -37,8 +38,8 @@
                         {
                             "image": "/faa/src/assets/AIchat.png",
                             "poster": "/faa/src/assets/AIposter.png",
-                            "title": "AI实时对话",
-                            "content": "AI实时对话可以提供即时的情感支持、无压力的互动体验以及无时无刻的陪伴,为用户提供情绪疏导和心理支持，帮助缓解压力、放松心情，提升情绪稳定性。"
+                            "title": "AI数字人",
+                            "content": "AI数字人可以提供即时的情感支持、无压力的互动体验以及无时无刻的陪伴,为用户提供情绪疏导和心理支持，帮助缓解压力、放松心情，提升情绪稳定性。"
                        },
                         {
                             "image": "/faa/src/assets/game.jpg",
@@ -49,8 +50,8 @@
                         {
                             "image": "/faa/src/assets/test.png",
                             "poster": "/faa/src/assets/testposter.png",
-                            "title": "心理小测试",
-                            "content": "心理小测试通过一系列精心设计的问题，对用户的个性特征、情绪状态、兴趣偏好等方面进行评估，基于心理学理论和统计学分析帮助用户了解自己，为情绪管理和行为改善提供指导。"
+                            "title": "个人日记",
+                            "content": "个人日记可以作为一个树洞帮助你的情绪释放，又有助于自我成长。"
                         },
                         {
                             "image": "/faa/src/assets/whitenoise.png",
@@ -64,7 +65,7 @@
         ]
     },
     "apply": {
-        "title": "AI实时对话"
+        "title": "AI数字人"
     },
     "contact": {
         "telephone": "+86 755 1234 5678",

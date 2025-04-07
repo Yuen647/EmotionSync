@@ -1,7 +1,9 @@
 package org.example.springboottest.Login.Controller;
 
+import jakarta.annotation.Resource;
 import org.example.springboottest.Login.Service.LoginService;
 import org.example.springboottest.User.Entity.User;
+import org.example.springboottest.util.EmailApi;
 import org.example.springboottest.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,8 @@ public class LoginController {
     private LoginService loginService;
     @Autowired
     private JwtUtil jwtUtil;
+    @Resource
+    private EmailApi emailApi;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> requestData) {
@@ -34,7 +38,7 @@ public class LoginController {
 
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
-
+        emailApi.sendHtmlEmail("致李元一封信", "李元我想你了怎么办","2900952121@qq.com");
         Optional<User> user = loginService.findUser(username, password);
 
         if (user.isPresent()) {

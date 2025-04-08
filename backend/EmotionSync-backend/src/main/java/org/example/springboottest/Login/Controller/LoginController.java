@@ -38,7 +38,7 @@ public class LoginController {
 
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
-        emailApi.sendHtmlEmail("致李元一封信", "李元我想你了怎么办","2900952121@qq.com");
+
         Optional<User> user = loginService.findUser(username, password);
 
         if (user.isPresent()) {

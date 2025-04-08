@@ -20,7 +20,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        /*
+        // 排除公共路径，不进行 JWT 校验
+        if (request.getRequestURI().startsWith("/api/verify")) {
+            filterChain.doFilter(request, response);
+            return; // 直接放行，不执行后续的 JWT 校验
+        }
+        */
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

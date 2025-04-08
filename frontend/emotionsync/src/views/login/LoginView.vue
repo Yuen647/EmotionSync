@@ -242,7 +242,7 @@ const handleResetPasswordEmail = async () => {
 // 发送验证码
 const sendCode = async () => {
   try {
-    const response = await axios.post('http://localhost:9000/myHello/send-code', { email: form.value.email });
+    const response = await axios.post('http://localhost:9000/api/verify/send', { email: form.email });
     if (response.data.success) {
       alert('验证码发送成功，请查收');
       showVerifyInput.value = true;  // 显示验证码输入框
@@ -257,9 +257,9 @@ const sendCode = async () => {
 // 验证验证码
 const verifyCode = async () => {
   try {
-    const response = await axios.post('http://localhost:9000/myHello/verify-code', {
-      email: form.value.email,
-      code: form.value.code,
+    const response = await axios.post('http://localhost:9000/api/verify/check', {
+      email: form.email,
+      code: form.code,
     });
     if (response.data.success) {
       alert('验证码验证成功');

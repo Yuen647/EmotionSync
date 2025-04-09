@@ -108,17 +108,16 @@
         </template>
       </el-input>
       <!-- 输入验证码-->
-      <el-input v-model="form.code" type="text" placeholder="输入验证码" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">
+      <el-input v-model="form.code" type="text" placeholder="输入验证码"
+                v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">
         <template #prefix>
           <div class="ml-[8px] w-[70px] text-left">验证码</div>
         </template>
+        <template #append>
+          <el-button type="primary" size="small" :disabled="!form.email" @click="sendCode">发送验证码</el-button>
+        </template>
       </el-input>
-      <!-- 发送验证码按钮 -->
-      <el-button type="primary" :disabled="!form.email" @click="sendCode" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">发送验证码</el-button>
 
-      <!-- 验证验证码按钮 -->
-      <el-button type="primary" :disabled="!form.code" @click="verifyCode" v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">验证验证码</el-button>
-      <br>
       <div v-if="(type === 'register' && !waitVerify) || (type === 'reset-password' && waitVerify)"
            class='opacity-35 text-left text-[14px]'>密码请输入至少6个字符，包括字母和数字</div>
       <div v-if="type === 'reset-password' && !waitVerify" class="text-[rgba(0,0,0,0.35)] text-[12px]">请重新设置密码，密码请输入至少6个字符，包括字母和数字</div>
@@ -203,40 +202,79 @@ const handleLogin = async () => {
 
 const handleSignup = async () => {
   try {
-    const response = await axios.post('http://localhost:9000/myHello/register', form);
-    console.log(response.data);
+    // 第一步：验证验证码是否正确
+    const verifyResponse = await axios.post('http://localhost:9000/api/verify/check', {
+      email: form.email,
+      code: form.code,
+    });
 
-    if (response.data.success) {
-      // 注册成功逻辑
-      alert(response.data.message);
-      userStore.logIn();
-      userStore.setUsername(form.username); // 保存 username 到全局状态
-      goToHome();
+    if (verifyResponse.data.message === '验证码正确') {
+      //alert('验证码验证成功');
+      waitVerify.value = false;  // 验证通过，允许进入注册流程
+      console.log("111");
+
+      try {
+        // 第二步：调用注册接口
+        const registerResponse = await axios.post('http://localhost:9000/myHello/register', form);
+        console.log(registerResponse.data);
+
+        if (registerResponse.data.success) {
+          alert(registerResponse.data.message || '注册成功');
+          userStore.logIn();
+          userStore.setUsername(form.username);  // 保存用户名到全局状态
+          goToHome();
+        } else {
+          alert(registerResponse.data.message || '注册失败，请重试');
+        }
+      } catch (registerError) {
+        console.error('注册失败:', registerError);
+        alert(registerError.response?.data?.message || '网络错误，请稍后再试');
+      }
     } else {
-      // 注册失败逻辑
-      alert(response.data.message || '注册失败，请重试');
+      alert(verifyResponse.data.message || '验证码验证失败');
     }
-  } catch (error) {
-    console.error('注册失败:', error);
-    alert(error.response.data.message || '网络错误，请稍后再试');
+  } catch (verifyError) {
+    console.error('验证码验证失败:', verifyError);
+    alert(verifyError.response?.data?.message || '网络错误，请稍后再试');
   }
 };
 
+
 const handleResetPasswordEmail = async () => {
   try {
-    const response = await axios.post('http://localhost:9000/myHello/reset-password', form);
-    console.log(response.data);
-    if (response.data.message === '密码重置成功') {
-      userStore.logIn();
-      userStore.setUsername(form.username); // 保存 username 到全局状态
-      goToHome();
+    const response = await axios.post('http://localhost:9000/api/verify/check', {
+      email: form.email,
+      code: form.code,
+    });
+    if (response.data.message === '验证码正确') {
+      //alert('验证码验证成功');
+      waitVerify.value = false;  // 验证成功后可以继续注册/重置密码流程
+      try {
+        const response = await axios.post('http://localhost:9000/myHello/reset-password', form);
+        console.log(response.data);
+        if (response.data.message === '密码重置成功') {
+          userStore.logIn();
+          userStore.setUsername(form.username); // 保存 username 到全局状态
+          goToHome();
+        } else {
+          alert(response.data.message || '请求失败，请稍后再试');
+        }
+      } catch (error) {
+        console.error('重置密码失败:', error);
+        if (error.response && error.response.data) {
+          alert(error.response.data.message || '请求失败，请稍后再试');
+        } else {
+          alert('网络错误，请稍后再试');
+        }
+      }
     } else {
-      alert(response.data.message || '请求失败，请稍后再试');
+      alert(response.data.message || '验证码验证失败');
     }
   } catch (error) {
-    console.error('重置密码失败:', error);
-    alert(error.response.data.message || '网络错误，请稍后再试');
+    console.error('验证验证码失败:', error);
+    alert(error.response?.data.message || '网络错误，请稍后再试');
   }
+
 };
 
 // 发送验证码
@@ -256,21 +294,7 @@ const sendCode = async () => {
 };
 // 验证验证码
 const verifyCode = async () => {
-  try {
-    const response = await axios.post('http://localhost:9000/api/verify/check', {
-      email: form.email,
-      code: form.code,
-    });
-    if (response.data.success) {
-      alert('验证码验证成功');
-      waitVerify.value = false;  // 验证成功后可以继续注册/重置密码流程
-    } else {
-      alert(response.data.message || '验证码验证失败');
-    }
-  } catch (error) {
-    console.error('验证验证码失败:', error);
-    alert(error.response?.data.message || '网络错误，请稍后再试');
-  }
+
 };
 
 const toggleMode = () => {

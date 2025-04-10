@@ -79,15 +79,7 @@
           <div class="ml-[8px] w-[70px] text-left">新密码</div>
         </template>
       </el-input>
-      <template v-if="type === 'register'">
-        <!--
-        <div class="flex justify-between">
-            <input v-for="_, i in 6" class="w-[40px] h-[40px] outline-[#0EB698] text-center text-[16px]"
-                :ref="(el: any) => inputsRef[i] = el" v-model="form.code[i]" @input="handleInput($event, i)"
-                @keydown.delete="handleDelete(i)" />
-        </div>
-        -->
-      </template>
+
       <el-input type="email" v-model="form.email" style="--el-color-primary: #0EB698"
                 v-if="type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify)">
         <template #prefix>
@@ -108,15 +100,30 @@
         </template>
       </el-input>
       <!-- 输入验证码-->
-      <el-input v-model="form.code" type="text" placeholder="输入验证码"
-                v-if="!showVerifyInput && (type === 'reset-password' && !waitVerify || (type === 'register' && !waitVerify))">
-        <template #prefix>
-          <div class="ml-[8px] w-[70px] text-left">验证码</div>
-        </template>
-        <template #append>
-          <el-button type="primary" size="small" :disabled="!form.email" @click="sendCode">发送验证码</el-button>
-        </template>
-      </el-input>
+      <!-- 验证码输入框 -->
+      <div v-if="(type === 'reset-password' && !waitVerify) || (type === 'register' && !waitVerify)">
+        <el-input v-model="form.code" type="text" placeholder="输入验证码" style="--el-color-primary: #0EB698">
+          <template #prefix>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg" class="mr-2">
+              <path d="M12 2L4 5V11C4 16 7.6 20.3 12 22C16.4 20.3 20 16 20 11V5L12 2Z"
+                    stroke="#4C4C4C" stroke-width="1.5" stroke-linejoin="round"
+                    fill="#0EB698" fill-opacity="0.2" />
+              <path d="M9 12L11 14L15 10" stroke="#4C4C4C" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="ml-[8px] w-[70px] text-left">验证码</div>
+          </template>
+          <template #append>
+            <el-button type="primary" size="small" style="color: blue;" :disabled="!form.email" @click="sendCode">
+              发送验证码
+            </el-button>
+          </template>
+        </el-input>
+
+        <div v-if="codeSent" class="text-green-500 text-sm mt-1">验证码已发送</div>
+      </div>
+
 
       <div v-if="(type === 'register' && !waitVerify) || (type === 'reset-password' && waitVerify)"
            class='opacity-35 text-left text-[14px]'>密码请输入至少6个字符，包括字母和数字</div>
@@ -165,6 +172,7 @@ const showVerifyInput = ref(false); // 控制验证码输入框是否显示
 const waitVerify = ref(false);  // 控制是否在等待验证码验证
 const route = useRoute()
 const userStore = useUserStore();
+const codeSent = ref(false);  // 判断验证码是否发送
 
 const form = reactive({
   email: '',
@@ -281,8 +289,8 @@ const handleResetPasswordEmail = async () => {
 const sendCode = async () => {
   try {
     const response = await axios.post('http://localhost:9000/api/verify/send', { email: form.email });
-    if (response.data.success) {
-      alert('验证码发送成功，请查收');
+    if (response.data.message === '验证码已发送') {
+      codeSent.value = true; // ✅ 显示“验证码已发送”
       showVerifyInput.value = true;  // 显示验证码输入框
     } else {
       alert(response.data.message || '验证码发送失败');
@@ -292,10 +300,7 @@ const sendCode = async () => {
     alert(error.response?.data.message || '网络错误，请稍后再试');
   }
 };
-// 验证验证码
-const verifyCode = async () => {
 
-};
 
 const toggleMode = () => {
   if (type.value === 'login') {

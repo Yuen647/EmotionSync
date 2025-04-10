@@ -196,6 +196,9 @@ const handleLogin = async () => {
     const response = await axios.post('http://localhost:9000/myHello/login', form);
     console.log(form.username);
     if (response.data.message === '登录成功') {
+      const token = response.data.token;
+      // 存储 token
+      localStorage.setItem('token', token);
       userStore.logIn();
       userStore.setUsername(form.username); // 保存 username 到全局状态
       goToHome();
@@ -230,6 +233,9 @@ const handleSignup = async () => {
           alert(registerResponse.data.message || '注册成功');
           userStore.logIn();
           userStore.setUsername(form.username);  // 保存用户名到全局状态
+          const token = registerResponse.data.token;
+          // 存储 token
+          localStorage.setItem('token', token);
           goToHome();
         } else {
           alert(registerResponse.data.message || '注册失败，请重试');
@@ -259,10 +265,11 @@ const handleResetPasswordEmail = async () => {
       waitVerify.value = false;  // 验证成功后可以继续注册/重置密码流程
       try {
         const response = await axios.post('http://localhost:9000/myHello/reset-password', form);
-        console.log(response.data);
         if (response.data.message === '密码重置成功') {
           userStore.logIn();
           userStore.setUsername(form.username); // 保存 username 到全局状态
+          const token = response.data.token;
+          localStorage.setItem('token', token);
           goToHome();
         } else {
           alert(response.data.message || '请求失败，请稍后再试');

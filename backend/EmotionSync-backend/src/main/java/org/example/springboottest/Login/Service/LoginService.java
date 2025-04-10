@@ -3,6 +3,7 @@ package org.example.springboottest.Login.Service;
 import org.example.springboottest.Login.Controller.LoginRepository;
 import org.example.springboottest.User.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,9 +13,20 @@ import java.util.Optional;
 public class LoginService {
     @Autowired
     private LoginRepository loginRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Optional<User> findUser(String username, String password) {
-        return loginRepository.findByUsernameAndPassword(username,password);
+        Optional<User> userOptional = loginRepository.findByUsername(username);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // 匹配密码（明文 vs 加密）
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
     }
 
     public boolean existsByUsername(String username) {
@@ -25,7 +37,8 @@ public class LoginService {
         try {
             User user = new User();
             user.setUsername(username);
-            user.setPassword(password);
+            String encryptedPassword = passwordEncoder.encode(password);
+            user.setPassword(encryptedPassword);
             user.setEmail(email);
             user.setIdentity("user");
             loginRepository.save(user);
@@ -44,7 +57,8 @@ public class LoginService {
             Optional<User> userOptional = loginRepository.findByEmailAndUsername(email, username);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                user.setPassword(newPassword);
+                String encryptedPassword = passwordEncoder.encode(newPassword);
+                user.setPassword(encryptedPassword);
                 loginRepository.save(user);
                 return true;
             }

@@ -23,8 +23,6 @@ public class LoginController {
     private LoginService loginService;
     @Autowired
     private JwtUtil jwtUtil;
-    @Resource
-    private EmailApi emailApi;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> requestData) {
@@ -108,7 +106,9 @@ public class LoginController {
         boolean success = loginService.resetPassword(username, email, newPassword);
 
         if (success) {
-            return ResponseEntity.ok(Map.of("success", true, "message", "密码重置成功"));
+            // 生成 JWT 令牌
+            String token = jwtUtil.generateToken(username);
+            return ResponseEntity.ok(Map.of("success", true, "message", "密码重置成功","token", token));
         } else {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "密码重置失败"));
         }

@@ -1,16 +1,18 @@
 package org.example.springboottest.User.Entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.persistence.*;
 
 @Entity
 @Data
 @Table(name = "User")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // 自动生成并自增
+    @Column(name = "user_id")
+    private Long userId;  // 将 userId 改为 Long 类型
+
     private String username; // 主键
 
     private String password;

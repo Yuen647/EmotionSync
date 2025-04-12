@@ -13,17 +13,47 @@ public class VerifyService {
     @Resource
     private EmailApi emailApi;
 
-    private final Map<String, String> codeMap = new ConcurrentHashMap<>();
+    private final Map<String, VerificationCode> codeMap = new ConcurrentHashMap<>();
+    private static final long EXPIRATION_TIME = 5 * 60 * 1000;  // 设置验证码有效期为5分钟（单位：毫秒）
 
     public boolean sendVerificationCode(String email) {
         String code = String.valueOf(new Random().nextInt(900000) + 100000); // 6位验证码
-        codeMap.put(email, code);
-        emailApi.sendHtmlEmail("请接收验证码", code,email);
+        long currentTime = System.currentTimeMillis();
+        codeMap.put(email, new VerificationCode(code, currentTime));
+        emailApi.sendHtmlEmail("请接收验证码", code, email);
         return true;
     }
 
     public boolean verifyCode(String email, String code) {
-        return code.equals(codeMap.getOrDefault(email, ""));
+        VerificationCode verificationCode = codeMap.get(email);
+        if (verificationCode == null) {
+            return false;
+        }
+        long currentTime = System.currentTimeMillis();
+        // 验证码是否过期
+        if (currentTime - verificationCode.getTimestamp() > EXPIRATION_TIME) {
+            codeMap.remove(email);  // 移除过期验证码
+            return false;
+        }
+        return code.equals(verificationCode.getCode());
+    }
+
+    // 内部类用于存储验证码和生成时间
+    private static class VerificationCode {
+        private String code;
+        private long timestamp;
+
+        public VerificationCode(String code, long timestamp) {
+            this.code = code;
+            this.timestamp = timestamp;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
     }
 }
-

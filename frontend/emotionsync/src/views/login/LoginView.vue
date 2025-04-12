@@ -99,7 +99,6 @@
           <div class="ml-[8px] w-[70px] text-left">邮箱</div>
         </template>
       </el-input>
-      <!-- 输入验证码-->
       <!-- 验证码输入框 -->
       <div v-if="(type === 'reset-password' && !waitVerify) || (type === 'register' && !waitVerify)">
         <el-input v-model="form.code" type="text" placeholder="输入验证码" style="--el-color-primary: #0EB698">
@@ -115,16 +114,21 @@
             <div class="ml-[8px] w-[70px] text-left">验证码</div>
           </template>
           <template #append>
-            <el-button type="primary" size="small" style="color: blue;" :disabled="!form.email" @click="sendCode">
-              发送验证码
+            <el-button
+                type="primary"
+                size="small"
+                style="color: blue;"
+                :disabled="!form.email || countdown > 0"
+                @click="sendCode"
+            >
+              {{ countdown > 0 ? countdown + ' 秒后重试' : '发送验证码' }}
             </el-button>
           </template>
         </el-input>
 
         <div v-if="codeSent" class="text-green-500 text-sm mt-1">验证码已发送</div>
+
       </div>
-
-
       <div v-if="(type === 'register' && !waitVerify) || (type === 'reset-password' && waitVerify)"
            class='opacity-35 text-left text-[14px]'>密码请输入至少6个字符，包括字母和数字</div>
       <div v-if="type === 'reset-password' && !waitVerify" class="text-[rgba(0,0,0,0.35)] text-[12px]">请重新设置密码，密码请输入至少6个字符，包括字母和数字</div>
@@ -173,6 +177,8 @@ const waitVerify = ref(false);  // 控制是否在等待验证码验证
 const route = useRoute()
 const userStore = useUserStore();
 const codeSent = ref(false);  // 判断验证码是否发送
+const countdown = ref(0);
+const timer = ref(null);
 
 const form = reactive({
   email: '',
@@ -292,13 +298,21 @@ const handleResetPasswordEmail = async () => {
 
 };
 
-// 发送验证码
+
 const sendCode = async () => {
+  if (countdown.value > 0) return // 避免重复点击
   try {
     const response = await axios.post('http://localhost:9000/api/verify/send', { email: form.email });
     if (response.data.message === '验证码已发送') {
       codeSent.value = true; // ✅ 显示“验证码已发送”
       showVerifyInput.value = true;  // 显示验证码输入框
+      countdown.value = 60; // 设置倒计时为 60 秒
+      timer.value = setInterval(() => {
+        countdown.value--
+        if (countdown.value <= 0) {
+          clearInterval(timer.value)
+        }
+      }, 1000)
     } else {
       alert(response.data.message || '验证码发送失败');
     }

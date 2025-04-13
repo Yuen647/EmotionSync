@@ -200,7 +200,6 @@ const buttonStyle = {
 const handleLogin = async () => {
   try {
     const response = await axios.post('http://localhost:9000/myHello/login', form);
-    console.log(form.username);
     if (response.data.message === '登录成功') {
       const token = response.data.token;
       // 存储 token
@@ -226,17 +225,13 @@ const handleSignup = async () => {
     });
 
     if (verifyResponse.data.message === '验证码正确') {
-      //alert('验证码验证成功');
       waitVerify.value = false;  // 验证通过，允许进入注册流程
       console.log("111");
 
       try {
         // 第二步：调用注册接口
         const registerResponse = await axios.post('http://localhost:9000/myHello/register', form);
-        console.log(registerResponse.data);
-
         if (registerResponse.data.success) {
-          alert(registerResponse.data.message || '注册成功');
           userStore.logIn();
           userStore.setUsername(form.username);  // 保存用户名到全局状态
           const token = registerResponse.data.token;
@@ -267,7 +262,6 @@ const handleResetPasswordEmail = async () => {
       code: form.code,
     });
     if (response.data.message === '验证码正确') {
-      //alert('验证码验证成功');
       waitVerify.value = false;  // 验证成功后可以继续注册/重置密码流程
       try {
         const response = await axios.post('http://localhost:9000/myHello/reset-password', form);
@@ -295,7 +289,6 @@ const handleResetPasswordEmail = async () => {
     console.error('验证验证码失败:', error);
     alert(error.response?.data.message || '网络错误，请稍后再试');
   }
-
 };
 
 

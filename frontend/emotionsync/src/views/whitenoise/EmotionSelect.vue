@@ -59,7 +59,7 @@ function selectEmotion(emotion) {
   //emit("emotionSelected", emotion); // 将选择的情绪传递给父组件
 
   // 发送情绪数据到后端
-  axios.post('http://localhost:9000/api/emotions/recommend', {
+  axios.post('http://localhost:9000/api/whitenoise/recommend', {
     emotion,
     numRecommendations: 2, // 假设推荐 2 个音频
   })

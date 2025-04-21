@@ -1,16 +1,13 @@
 package org.example.springboottest.Login.Controller;
 
-import jakarta.annotation.Resource;
 import org.example.springboottest.Login.Service.LoginService;
 import org.example.springboottest.User.Entity.User;
-import org.example.springboottest.util.EmailApi;
 import org.example.springboottest.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,10 +30,7 @@ public class LoginController {
         if (Objects.equals(username, "") || Objects.equals(password, "")) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "信息不完整"));
         }
-
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
+        // 数据库中寻找用户
         Optional<User> user = loginService.findUser(username, password);
 
         if (user.isPresent()) {
@@ -61,21 +55,18 @@ public class LoginController {
         if (Objects.equals(email, "") || Objects.equals(username, "") || Objects.equals(password, "")) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "信息不完整"));
         }
+        // 密码长度小于6
         if(password.length() < 6) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "密码长度输入错误"));
         }
-        // 打印请求参数（可选，用于调试）
-        System.out.println("Email: " + email);
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
+        // 用户是否已经存在
         if(loginService.existsByUsername(username)){
             return ResponseEntity.status(400).body(Map.of("success", false, "message", "用户名已存在"));
         }
+        // 检查用户是否注册成功
+        boolean user = loginService.registerUser(username, password, email);
 
-        boolean success = loginService.registerUser(username, password, email);
-
-        if (success) {
+        if (user) {
             // 生成 JWT 令牌
             String token = jwtUtil.generateToken(username);
             return ResponseEntity.ok(Map.of("success", true, "message", "注册成功", "token", token));
@@ -83,7 +74,7 @@ public class LoginController {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "注册失败"));
         }
     }
-
+    // 修改密码部分
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody Map<String, String> requestData) {
         String email = requestData.get("email");
@@ -94,6 +85,7 @@ public class LoginController {
         if (Objects.equals(email, "") || Objects.equals(username, "") || Objects.equals(newPassword, "")) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "信息不完整"));
         }
+        // 新密码设置长度小于6
         if(newPassword.length() < 6) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "密码长度输入错误"));
         }
@@ -103,9 +95,9 @@ public class LoginController {
         }
 
         // 重置密码
-        boolean success = loginService.resetPassword(username, email, newPassword);
+        boolean user = loginService.resetPassword(username, email, newPassword);
 
-        if (success) {
+        if (user) {
             // 生成 JWT 令牌
             String token = jwtUtil.generateToken(username);
             return ResponseEntity.ok(Map.of("success", true, "message", "密码重置成功","token", token));

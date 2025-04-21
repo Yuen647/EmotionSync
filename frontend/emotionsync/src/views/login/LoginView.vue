@@ -199,7 +199,10 @@ const buttonStyle = {
 
 const handleLogin = async () => {
   try {
-    const response = await axios.post('http://localhost:9000/myHello/login', form);
+    const response = await axios.post('http://localhost:9000/myHello/login', {
+      username: form.username,
+      password: form.password,
+    });
     if (response.data.message === '登录成功') {
       const token = response.data.token;
       // 存储 token
@@ -226,7 +229,6 @@ const handleSignup = async () => {
 
     if (verifyResponse.data.message === '验证码正确') {
       waitVerify.value = false;  // 验证通过，允许进入注册流程
-      console.log("111");
 
       try {
         // 第二步：调用注册接口

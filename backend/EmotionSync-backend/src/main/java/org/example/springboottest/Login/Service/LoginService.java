@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -16,6 +15,7 @@ public class LoginService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // 寻找用户是否存在
     public Optional<User> findUser(String username, String password) {
         Optional<User> userOptional = loginRepository.findByUsername(username);
 
@@ -28,7 +28,7 @@ public class LoginService {
         }
         return Optional.empty();
     }
-
+    // 寻找用户名是否存在
     public boolean existsByUsername(String username) {
         return loginRepository.existsByUsername(username);
     }
@@ -48,15 +48,17 @@ public class LoginService {
             return false;
         }
     }
+    // 返回用户名和邮箱是否已经存在
     public boolean existsByEmailAndUsername(String email, String username) {
         return loginRepository.existsByEmailAndUsername(email, username);
     }
-
+    // 修改密码
     public boolean resetPassword(String username, String email, String newPassword) {
         try {
             Optional<User> userOptional = loginRepository.findByEmailAndUsername(email, username);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
+                // 密码进行加密
                 String encryptedPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encryptedPassword);
                 loginRepository.save(user);

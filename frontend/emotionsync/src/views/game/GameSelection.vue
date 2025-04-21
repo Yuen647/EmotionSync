@@ -4,7 +4,7 @@
       @mouseleave="hoverIndex = -1" @click="onGameClick(game.name)">
       <!-- 默认显示 -->
       <div class="card-content" v-if="hoverIndex === index">
-        <img :src="game.image" :alt="game.displayName" class="game-image" />
+        <img style="cursor: pointer;" :src="game.image" :alt="game.displayName" class="game-image" />
         <h2 class="game-name">{{ game.displayName }}</h2>
         <p class="game-detail">{{ game.detail }}</p>
       </div>

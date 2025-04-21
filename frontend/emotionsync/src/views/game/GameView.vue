@@ -1,12 +1,27 @@
 <template>
   <div class="game-container">
+    <div style="margin: 0px 20%;">
     <h1 class="title">解压小游戏</h1>
+    <div class="text-container">
+      <div class="benefit-section">
+        <h2 class="section-title">🎈 玩解压小游戏的好处</h2>
+        <div class="card-container">
+          <div class="benefit-card" v-for="item in benefits" :key="item.title">
+            <h3 class="card-title">{{ item.title }}</h3>
+            <p class="card-description">{{ item.description }}</p>
+          </div>
+        </div>
+      </div>
+  </div>
     <p class="description">
-      欢迎！亲爱的玩家： {{ userName || '游客' }} ，猜你想玩：{{ recommendedGame }}
+      欢迎！亲爱的玩家： <span class="highlight">{{ userName || '游客' }}</span> ，猜你想玩：
+      <span v-if="recommendedGame" class="recommended-game">{{ recommendedGame }}</span>
+      <a-spin v-else />
     </p>
     <!-- 游戏选择 -->
     <GameSelection :games="games" @openGame="openGame" />
   </div>
+</div>
 </template>
 
 <script setup>
@@ -14,7 +29,20 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import GameSelection from './GameSelection.vue';
 import { useUserStore } from '@/store/userStore';
-
+const benefits = [
+  {
+    title: '减少焦虑压力',
+    description: '小游戏通过轻松互动帮助你分散注意力，舒缓紧张情绪。',
+  },
+  {
+    title: '获得即时成就感',
+    description: '通过完成游戏小目标获得正向反馈，增强幸福感和自信。',
+  },
+  {
+    title: '提升专注力',
+    description: '策略类游戏如2048帮助训练逻辑思维与注意力控制。',
+  }
+]
 const games = ref([ // 游戏列表
   {
     name: '2048',
@@ -38,6 +66,7 @@ const games = ref([ // 游戏列表
     image: 'faa/public/ctr/images/ctr.jpg',
   }
 ]);
+
 
 const userName = useUserStore().username; // 获取当前用户名
 
@@ -206,57 +235,94 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 加入 Google Fonts 风格的字体（如果允许的话可以用 CDN 引入） */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Open+Sans:wght@400;600&display=swap');
+
 .game-container {
-  text-align: center;
-  margin-top: 30px;
-  font-family: 'Arial', sans-serif;
-  /* 设置字体 */
+  background: linear-gradient(135deg, #fef9f9 0%, #f0f5ff 100%);
+  padding: 40px 5%;
+  border-radius: 16px;
+  font-family: 'Open Sans', sans-serif;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
 }
 
 .title {
-  font-size: 36px;
-  /* 设置标题字体大小 */
-  font-weight: bold;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 48px;
+  color: #34495e;
+  margin-bottom: 24px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
+.text-container {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+  border-left: 6px solid #3498db;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
   color: #2c3e50;
-  /* 设置字体颜色 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  /* 字体阴影效果 */
-  margin-bottom: 10px;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+.benefit-card {
+  width: 150px;
+  padding: 18px;
+  background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.benefit-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.card-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
 }
 
 .description {
   font-size: 18px;
-  /* 设置描述文字大小 */
-  color: #7f8c8d;
-  /* 设置字体颜色 */
-  margin-bottom: 30px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: #666;
   font-style: italic;
-  /* 斜体样式 */
 }
 
-.game-selection-button {
-  font-size: 20px;
+.highlight {
+  color: #2ecc71;
   font-weight: bold;
-  padding: 10px 20px;
-  background-color: #3498db;
-  /* 按钮背景色 */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.game-selection-button:hover {
-  background-color: #2980b9;
-  /* 悬停效果 */
 }
 
 .recommended-game {
   font-size: 22px;
   font-weight: bold;
-  color: #e74c3c;
-  /* 推荐游戏的字体颜色 */
-  margin-top: 20px;
+  color: #e67e22;
+  text-decoration: underline;
 }
+
 </style>

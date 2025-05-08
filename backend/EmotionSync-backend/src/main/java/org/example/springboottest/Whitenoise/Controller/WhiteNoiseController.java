@@ -6,11 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -37,7 +32,7 @@ public class WhiteNoiseController {
         System.out.println("now: " + now);
 
         try{
-            whiteNoiseService.saveWhiteNoise(username, playDuration, emotion, audioName,now);
+            whiteNoiseService.saveWhiteNoise(username, playDuration, emotion, audioName, now);
             return ResponseEntity.status(200).body(Map.of("success", true, "message", "插入成功"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "数据库错误，请稍后再试"));

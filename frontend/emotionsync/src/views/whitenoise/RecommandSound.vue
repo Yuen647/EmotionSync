@@ -139,6 +139,9 @@ function backToController(){
     // 从 userStore 获取用户名
     const username = userStore.username;
     console.log(username);
+    console.log(selectedEmotion)
+    console.log(playDuration.value)
+    console.log(currentAudioName.value)
     // 发送数据到后端
     axios
         .post('http://localhost:9000/api/whitenoise', {

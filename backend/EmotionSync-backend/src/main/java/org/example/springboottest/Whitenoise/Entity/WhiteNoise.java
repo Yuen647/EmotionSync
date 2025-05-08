@@ -9,25 +9,25 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "WhiteNoise")
-@IdClass(WhiteNoisePk.class)
 public class WhiteNoise {
     @Id
-    @Column(name = "username")
-    private String username; // 主键
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @Id
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "audio_name")
-    private String audio_name;
+    private String audioName;
 
-    @Id
     @Column(name = "last_time")
-    private int last_time;
+    private int lastTime;
 
-    @Id
     @Column(name = "emotion")
     private String emotion;
 
     @Column(name="starttime")
-    private LocalDateTime starttime;
+    private LocalDateTime startTime;
 
 }

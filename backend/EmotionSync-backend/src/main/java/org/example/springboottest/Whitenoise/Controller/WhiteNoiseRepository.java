@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface WhiteNoiseRepository extends JpaRepository<WhiteNoise, String> {
-    List<WhiteNoise> findAllByUsername(String Username);
+    //List<WhiteNoise> findAllByUserId(String Username);
 
-    List<WhiteNoise> findAllByUsernameAndStarttimeBetween(String Username, LocalDateTime startTime, LocalDateTime endTime);
+    //List<WhiteNoise> findAllByUsernameAndStarttimeBetween(String Username, LocalDateTime startTime, LocalDateTime endTime);
 }

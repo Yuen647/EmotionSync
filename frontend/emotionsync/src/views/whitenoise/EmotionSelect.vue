@@ -67,7 +67,6 @@ function selectEmotion(emotion) {
         console.log('Emotion sent successfully:', response.data);
         // 从后端返回的数据中提取推荐音频列表
         const recommendedAudios = response.data;
-        console.log(recommendedAudios);
         // 将推荐音频数据传递给父组件
         emit("emotionSelected", { emotion, recommendedAudios });
       })

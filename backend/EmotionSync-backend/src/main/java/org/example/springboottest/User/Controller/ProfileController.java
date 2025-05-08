@@ -60,7 +60,7 @@ public class ProfileController {
         List<QuizResult> results = quizResultRepository.findAllByUsername(requestData.get("username"));
         return calculateIdentity(results);
     }
-
+    /*
     @PostMapping("/whitenoise")
     public Map<String, Integer> getWhiteNoise(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
@@ -81,6 +81,8 @@ public class ProfileController {
         return wnTime;
     }
 
+     */
+
     @PostMapping("/gametime")
     public Map<String, Integer> getGameDuration(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
@@ -96,7 +98,7 @@ public class ProfileController {
         List<WhiteNoise> whitenoises = whiteNoiseRepository.findAll();
         Map<String, Integer> wnTime = new HashMap<>();
         for (WhiteNoise record : whitenoises)
-            wnTime.merge(record.getAudio_name(), record.getLast_time(), Integer::sum);
+            wnTime.merge(record.getAudioName(), record.getLastTime(), Integer::sum);
         return wnTime;
     }
 
@@ -117,7 +119,7 @@ public class ProfileController {
             result.merge(gameState.getGameType(), gameState.getGameDuration(), Integer::sum);
         return result;
     }
-
+    /*
     @PostMapping("/timedwhitenoise")
     public Map<String, Integer> getPartTimeWhiteNoise(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
@@ -143,7 +145,7 @@ public class ProfileController {
             wnTime.merge(record.getEmotion(), 1, Integer::sum);
         return wnTime;
     }
-
+    */
     @PostMapping("/timedgametime")
     public Map<String, Integer> getPartTimeGameDuration(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");

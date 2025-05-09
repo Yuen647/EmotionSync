@@ -1,5 +1,8 @@
 package org.example.springboottest.Whitenoise.Service;
 
+import org.example.springboottest.Whitenoise.Controller.AudioRepository;
+import org.example.springboottest.Whitenoise.Entity.Audio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -7,41 +10,21 @@ import java.util.*;
 public class EmotionRecommender {
 
     // 音频数据存储
-    private final Map<String, Audio> items;
+    private Map<String, Audio> items;
+    private AudioRepository audioRepository;
+    private List<String> audios =  new ArrayList<>(Arrays.asList("rain", "wind", "thunder","waves","forest","fire","cafe","crickets","boating"));
 
-    // 初始化音频数据
-    public EmotionRecommender() {
-        items = new HashMap<>();
-        // 音频数据与心情特征映射
-        items.put("rain", new Audio("rain", "https://ambicular.com/sounds/rain/splashing-rainfall160.mp3", "https://defonic.b-cdn.net/defonic/images/icons/rain.svg", Map.of(
-                "sad", 0.9, "relaxed", 0.6
-        )));
-        items.put("wind", new Audio("wind", "https://st2.asoftmurmur.com/assets/p/content/wind/main-wind.mp4","https://defonic.b-cdn.net/defonic/images/icons/wind.svg", Map.of(
-                "relaxed", 0.8, "tired", 0.7
-        )));
-        items.put("thunder", new Audio("thunder", "https://st2.asoftmurmur.com/assets/p/content/thunder/main-thunder.mp4","https://defonic.b-cdn.net/defonic/images/icons/thunder.svg", Map.of(
-                "angry", 0.9, "fear", 0.7
-        )));
-        items.put("waves", new Audio("waves","https://st3.asoftmurmur.com/assets/p/content/waves/glue-waves.mp4", "https://defonic.b-cdn.net/defonic/images/icons/brook.svg", Map.of(
-                "happy", 0.8, "relaxed", 0.5
-        )));
-        items.put("forest", new Audio("forest","https://st2.asoftmurmur.com/assets/p/content/birds/main-birds.mp4", "https://defonic.b-cdn.net/defonic/images/icons/forest.svg", Map.of(
-                "relaxed", 0.9, "happy", 0.7
-        )));
-        items.put("fire", new Audio("fire","https://st2.asoftmurmur.com/assets/p/content/fire/main-fire.mp4","https://defonic.b-cdn.net/defonic/images/icons/fire.svg",  Map.of(
-                "relaxed", 0.9, "tired", 0.8
-        )));
-        items.put("cafe", new Audio("cafe","https://st3.asoftmurmur.com/assets/p/content/people/main-people.mp4","https://defonic.b-cdn.net/defonic/images/icons/cafe.svg",  Map.of(
-                "happy", 0.7, "excited", 0.6
-        )));
-        items.put("crickets", new Audio("crickets","https://st3.asoftmurmur.com/assets/p/content/crickets/glue-crickets.mp4","https://defonic.b-cdn.net/defonic/images/icons/leafs.svg",  Map.of(
-                "worry", 0.8, "tired", 0.7
-        )));
-        items.put("boating", new Audio("boating","https://ambicular.com/sounds/defonicprem/rowing160.mp3","https://defonic.b-cdn.net/defonic/images/icons/ocean.svg",  Map.of(
-                "anxious", 0.8, "happy", 0.6
-        )));
+    public EmotionRecommender(AudioRepository audioRepository) {
+        this.audioRepository = audioRepository;
     }
-
+    // 初始化音频数据
+    private void init() {
+        items = new HashMap<>();
+        for (String audioName : audios) {
+            Audio audio = audioRepository.findByAudioName(audioName);
+            items.put(audioName, new Audio(audio.getAudioName(), audio.getAudioSrc(), audio.getAudioIcon(), audio.getEmotion1(), audio.getEmotion2(), audio.getFeature1(), audio.getFeature2()));
+        }
+    }
     // 计算余弦相似度
     private double cosineSimilarity(Map<String, Double> userVector, Map<String, Double> itemVector) {
         double dotProduct = 0.0;
@@ -69,11 +52,13 @@ public class EmotionRecommender {
 
     // 根据情绪向量推荐音频
     public List<Audio> recommend(Map<String, Double> userEmotion, int numRecommendations) {
+        // 进行初始化
+        init();
         List<Map.Entry<Audio, Double>> scoredItems = new ArrayList<>();
 
         // 计算余弦相似度
         for (Audio item : items.values()) {
-            double score = cosineSimilarity(userEmotion, item.features);
+            double score = cosineSimilarity(userEmotion, item.getFeatures());
             scoredItems.add(Map.entry(item, score));
         }
 
@@ -84,40 +69,10 @@ public class EmotionRecommender {
         List<Audio> recommendations = new ArrayList<>();
         for (int i = 0; i < Math.min(numRecommendations, scoredItems.size()); i++) {
             recommendations.add(scoredItems.get(i).getKey());
-            System.out.println(scoredItems.get(i).getKey().getId());
+            // System.out.println(scoredItems.get(i).getKey().getId());
         }
 
         return recommendations;
     }
 
-    // 内部类：音频物品
-    public static class Audio {
-        private final String id;
-        private final String src;
-        private final String icon;
-        private final Map<String, Double> features;
-
-        public Audio(String id, String src, String icon, Map<String, Double> features) {
-            this.id = id;
-            this.src = src;
-            this.icon = icon;
-            this.features = features;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public Map<String, Double> getFeatures() {
-            return features;
-        }
-
-        public String getSrc() {
-            return src;
-        }
-
-        public String getIcon() {
-            return icon;
-        }
-    }
 }

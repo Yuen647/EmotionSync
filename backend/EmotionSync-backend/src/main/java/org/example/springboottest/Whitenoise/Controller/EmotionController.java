@@ -1,5 +1,6 @@
 package org.example.springboottest.Whitenoise.Controller;
 
+import org.example.springboottest.Whitenoise.Entity.Audio;
 import org.example.springboottest.Whitenoise.Service.EmotionRecommender;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class EmotionController {
 
     // 接收情绪数据并返回推荐结果
     @PostMapping("/recommend")
-    public List<EmotionRecommender.Audio> recommendAudio(@RequestBody EmotionRequest request) {
+    public List<Audio> recommendAudio(@RequestBody EmotionRequest request) {
         Map<String, Double> userEmotionVector = new HashMap<>();
         userEmotionVector.put(request.getEmotion(), 1.0); // 将用户情绪作为向量表示
         return recommenderService.recommend(userEmotionVector, request.getNumRecommendations());

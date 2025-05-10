@@ -23,12 +23,12 @@
     <div class="button-grid" v-if="recommendations && recommendations.length > 0">
       <div
           v-for="audio in recommendations"
-          :key="audio.id"
+          :key="audio.audioName"
           class="square-button"
-          @click="playOrPause(audio.src, audio.id)"
+          @click="playOrPause(audio.audioSrc, audio.audioName)"
       >
-        <img :src="audio.icon" alt="Icon" />
-        <span>{{ audio.id }}</span>
+        <img :src="audio.audioIcon" alt="Icon" />
+        <span>{{ audio.audioName }}</span>
       </div>
     </div>
   </div>
@@ -79,26 +79,37 @@ function playOrPause(audioUrl: string, audioName: string) {
 let audioPlayer: HTMLAudioElement | null = null;
 const playDuration = ref(0); // 播放时长（秒）
 let timer: number | null = null; // 计时器
+let audio_name = "rain";
 
 function playAudio(audioUrl: string) {
-  if (!audioPlayer) {
+  if (!audioPlayer) { // 初次播放
     audioPlayer = new Audio(audioUrl);
+    if(audio_name != null && audio_name != currentAudioName.value) {
+      backToController()
+    }
+    audio_name = currentAudioName.value
+    console.log(audio_name)
     audioPlayer.loop = true;
     audioPlayer.play()
         .then(() => startTimer())
         .catch((error) => console.error("播放音频失败:", error));
-  } else if (audioPlayer.src.includes(audioUrl)) {
+  } else if (audioPlayer.src.includes(audioUrl)) { // 当前播放器已存在，并且播放的是同一个音频
     if (audioPlayer.paused) {
       audioPlayer.play()
           .then(() => startTimer())
           .catch((error) => console.error("播放音频失败:", error));
     } else {
-      backToController();
+      // 暂停播放
+      // backToController();
       audioPlayer.pause();
       stopTimer();
     }
   } else {
-    backToController();
+    if(audio_name != null && audio_name != currentAudioName.value) {
+      backToController()
+    }
+    audio_name = currentAudioName.value
+    console.log(audio_name)
     stopAudio();
     audioPlayer = new Audio(audioUrl);
     audioPlayer.loop = true;
@@ -141,14 +152,14 @@ function backToController(){
     console.log(username);
     console.log(selectedEmotion)
     console.log(playDuration.value)
-    console.log(currentAudioName.value)
+    console.log(audio_name)
     // 发送数据到后端
     axios
         .post('http://localhost:9000/api/whitenoise', {
           username: username,          // 用户名
           playDuration: playDuration.value, // 播放时长
           emotion: selectedEmotion,   // 当前选定情绪
-          audioName: currentAudioName.value // 当前播放的音频名称
+          audioName: audio_name // 当前播放的音频名称
         })
         .then((response) => {
           console.log('数据发送成功:', response.data);

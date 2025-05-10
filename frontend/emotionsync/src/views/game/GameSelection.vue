@@ -1,19 +1,28 @@
 <template>
   <div class="game-selection">
-    <div class="game-card" v-for="(game, index) in games" :key="game.name" @mouseover="hoverIndex = index"
-      @mouseleave="hoverIndex = -1" @click="onGameClick(game.name)">
-      <!-- 默认显示 -->
-      <div class="card-content" v-if="hoverIndex === index">
-        <img style="cursor: pointer;" :src="game.image" :alt="game.displayName" class="game-image" />
+    <div
+      class="game-card"
+      v-for="(game, index) in games"
+      :key="game.name"
+      @mouseover="hoverIndex = index"
+      @mouseleave="hoverIndex = -1"
+    >
+      <!-- 左侧：图片 -->
+      <img :src="game.image" :alt="game.displayName" class="game-image" />
+
+      <!-- 中间：信息 -->
+      <div class="game-info">
         <h2 class="game-name">{{ game.displayName }}</h2>
-        <p class="game-detail">{{ game.detail }}</p>
+        <p class="game-description">
+          {{ hoverIndex === index ? game.detail : game.intro }}
+        </p>
       </div>
 
-      <!-- 鼠标悬浮外显示 -->
-      <div class="card-content" v-else>
-        <img :src="game.image" :alt="game.displayName" class="game-image" />
-        <h2 class="game-name">{{ game.displayName }}</h2>
-        <p class="game-intro">{{ game.intro }}</p>
+      <!-- 右侧：按钮 -->
+      <div class="game-action">
+        <button class="start-btn" @click="onGameClick(game.name)">
+          开始游戏
+        </button>
       </div>
     </div>
   </div>
@@ -22,7 +31,6 @@
 <script setup>
 import { ref } from 'vue';
 
-// 从父组件接收 games 数据
 const props = defineProps({
   games: {
     type: Array,
@@ -30,89 +38,78 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['openGame']);
 const hoverIndex = ref(-1);
 
-// 父组件传递的 openGame 事件
-const emit = defineEmits(['openGame']);
-
 const onGameClick = (gameName) => {
-  emit('openGame', gameName);  // 触发父组件的 openGame 方法
+  emit('openGame', gameName);
 };
 </script>
 
 <style scoped>
 .game-selection {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   gap: 20px;
+  align-items: center;
 }
 
 .game-card {
-  width: 250px;
-  height: 350px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.3s ease;
-  position: relative;
+  align-items: center;
+  width: 800px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
 }
 
 .game-card:hover {
-  transform: translateY(-10px);
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-  overflow: hidden;
+  transform: translateY(-5px);
 }
 
 .game-image {
-  width: 100%;
-  height: 160px;
+  width: 160px;
+  height: 100px;
   object-fit: cover;
   border-radius: 8px;
+  margin-right: 20px;
+}
+
+.game-info {
+  flex: 1;
+  text-align: left;
 }
 
 .game-name {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
-.game-intro,
-.game-detail {
+.game-description {
   font-size: 14px;
-  color: #777;
-  text-align: left;
+  color: #666;
   line-height: 1.5;
-  margin-bottom: 10px;
 }
 
-.game-intro {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.game-action {
+  margin-left: 20px;
 }
 
-.game-card:hover .game-intro {
-  display: none;
+.start-btn {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
 }
 
-.game-detail {
-  opacity: 0;
-  height: auto;
-}
-
-.game-card:hover .game-detail {
-  opacity: 1;
+.start-btn:hover {
+  background-color: #45a049;
 }
 </style>

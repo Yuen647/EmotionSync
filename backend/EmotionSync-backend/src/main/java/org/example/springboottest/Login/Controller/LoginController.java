@@ -36,6 +36,7 @@ public class LoginController {
         if (user.isPresent()) {
             // 生成 JWT 令牌
             String token = jwtUtil.generateToken(username);
+            System.out.println(token);
             return ResponseEntity.ok(Map.of("success", true, "message", "登录成功", "token", token));
         } else {
             return ResponseEntity.status(401).body(Map.of("success", false, "message", "用户名或密码错误"));

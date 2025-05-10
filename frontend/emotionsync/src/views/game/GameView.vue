@@ -77,6 +77,7 @@ const getUserGameState = async (gameName) => {
   try {
     console.log(`正在从后端获取用户【${userName}】在【${gameName}】游戏中的状态...`);
     const response = await axios.get(`http://localhost:9000/api/gamestate/${userName}/${gameName}`);
+    console.log('获取游戏状态的响应:', response);
 
     if (response.data) {
       console.log('成功获取游戏状态:', response.data);
@@ -181,7 +182,7 @@ const openGame = async (gameName) => {
         highestScore: finalScore,
         gameDuration: currentGameDuration,
       };
-
+      console.log('游戏数据:', gameStateData);
       // 将游戏数据发送到后端
       axios.post('http://localhost:9000/api/gamestate/add', gameStateData)
         .then(response => {

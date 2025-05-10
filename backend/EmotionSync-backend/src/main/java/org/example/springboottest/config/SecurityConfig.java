@@ -15,17 +15,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/myHello/**", "/api/verify/**","/api/whitenoise/**").permitAll()
+                        .requestMatchers(
+                            "/myHello/**",
+                            "/api/verify/**",
+                            "/api/whitenoise/**",
+                            "/api/notes/**",
+                            "/api/notes/create",
+                            "/api/notes/list",
+                            "/api/notes/update/**",
+                            "/api/notes/delete/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
 

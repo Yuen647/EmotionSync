@@ -2,16 +2,16 @@ package org.example.springboottest.Whitenoise.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "Audio")
 public class Audio {
     @Id
-    @Column(name = "audio_name")
+    @Column(name = "audio_name", length = 255)
     private String audioName;
 
     @Column(name = "audio_src")
@@ -24,6 +24,9 @@ public class Audio {
     private String emotion2;
     private double feature1;
     private double feature2;
+
+    @OneToMany(mappedBy = "audio", cascade = CascadeType.ALL)
+    private List<WhiteNoise> whiteNoises;
 
     @Transient
     private Map<String, Double> features;
@@ -41,8 +44,6 @@ public class Audio {
         this.feature2 = feature2;
     }
 
-
     public Audio() {
-
     }
 }

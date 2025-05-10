@@ -1,9 +1,7 @@
 package org.example.springboottest.Whitenoise.Entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,8 +16,9 @@ public class WhiteNoise {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "audio_name")
-    private String audioName;
+    @ManyToOne
+    @JoinColumn(name = "audio_name", referencedColumnName = "audio_name")
+    private Audio audio;
 
     @Column(name = "last_time")
     private int lastTime;
@@ -29,5 +28,4 @@ public class WhiteNoise {
 
     @Column(name="starttime")
     private LocalDateTime startTime;
-
 }

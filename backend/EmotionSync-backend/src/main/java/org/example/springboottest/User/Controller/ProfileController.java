@@ -31,8 +31,8 @@ public class ProfileController {
     public String getEmail(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
         return profileRepository.findById(username)
-                .map(User::getEmail) // 提取 email 字段
-                .orElse("User not found");  // 如果没有找到记录，返回提示信息
+                .map(User::getEmail)
+                .orElse("User not found");
     }
 
     private String calculateIdentity(List<QuizResult> results) {
@@ -98,7 +98,7 @@ public class ProfileController {
         List<WhiteNoise> whitenoises = whiteNoiseRepository.findAll();
         Map<String, Integer> wnTime = new HashMap<>();
         for (WhiteNoise record : whitenoises)
-            wnTime.merge(record.getAudioName(), record.getLastTime(), Integer::sum);
+            wnTime.merge(record.getAudio().getAudioName(), record.getLastTime(), Integer::sum);
         return wnTime;
     }
 

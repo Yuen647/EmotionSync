@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -11,35 +12,48 @@ public class NoteController {
     @Autowired
     private NoteService noteService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Note> createNote(@RequestBody Note note) {
         Note createdNote = noteService.createNote(note);
         return ResponseEntity.ok(createdNote);
     }
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<Note>> getNotesByUsername(@PathVariable String username) {
-        List<Note> notes = noteService.getNotesByUsername(username);
+    @PostMapping("/list")
+    public ResponseEntity<List<Note>> getNotesByUsername(@RequestBody NoteRequest request) {
+        List<Note> notes = noteService.getNotesByUsername(request.getUsername());
         return ResponseEntity.ok(notes);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable Integer id, @RequestBody Note note) {
-        Note updatedNote = noteService.updateNote(id, note);
+    @PostMapping("/update")
+    public ResponseEntity<Map<String, Object>> updateNote(@RequestBody NoteUpdateRequest request) {
+        Note updatedNote = noteService.updateNote(request.getId(), request.getNote());
         if (updatedNote != null) {
-            return ResponseEntity.ok(updatedNote);
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "笔记更新成功",
+                "data", updatedNote
+            ));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(Map.of(
+                "success", false,
+                "message", "笔记不存在"
+            ));
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(@PathVariable Integer id) {
-        boolean deleted = noteService.deleteNote(id);
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, Object>> deleteNote(@RequestBody NoteDeleteRequest request) {
+        boolean deleted = noteService.deleteNote(request.getId());
         if (deleted) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "笔记删除成功"
+            ));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(Map.of(
+                "success", false,
+                "message", "笔记不存在"
+            ));
         }
     }
 } 

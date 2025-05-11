@@ -1,4 +1,5 @@
 <template>
+  <!--
   <button class="back-emotion" @click="backToEmotion">
     <span>返回情绪选择界面</span>
   </button>
@@ -8,6 +9,41 @@
   <button class="back-button" @click="backToMain">
     <span>返回主页</span>
   </button>
+  -->
+  <!-- 悬浮按钮组 -->
+  <div class="fab-container">
+    <button class="fab-main" @click="toggleFab">
+      ☰
+    </button>
+
+    <transition-group name="fab" tag="div">
+      <button
+          v-if="fabOpen"
+          key="emotion"
+          class="fab-sub"
+          @click="backToEmotion"
+      >
+        🎭 情绪
+      </button>
+      <button
+          v-if="fabOpen"
+          key="popup"
+          class="fab-sub"
+          @click="popup(selectedEmotion)"
+      >
+        🌐 白噪声
+      </button>
+      <button
+          v-if="fabOpen"
+          key="home"
+          class="fab-sub"
+          @click="backToMain"
+      >
+        🏠 主页
+      </button>
+    </transition-group>
+  </div>
+
   <div class="popup-content">
     <!-- 显示选定情绪 -->
     <h6 class="selected-emotion-title">
@@ -69,6 +105,10 @@ onBeforeUnmount(() => {
   }
 });
 
+const fabOpen = ref(false);
+function toggleFab() {
+  fabOpen.value = !fabOpen.value;
+}
 
 
 function playOrPause(audioUrl: string, audioName: string) {
@@ -355,4 +395,57 @@ function backToEmotion() {
   text-decoration: underline; /* 下划线强调 */
   font-style: italic; /* 斜体显示 */
 }
+
+.fab-container {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 100;
+}
+
+.fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #f8b500;
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s;
+}
+
+.fab-main:hover {
+  background-color: #f1a100;
+}
+
+.fab-sub {
+  display: block;
+  margin-bottom: 10px;
+  width: 140px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.fab-sub:hover {
+  background-color: #f0f0f0;
+}
+
+/* 动画效果 */
+.fab-enter-active, .fab-leave-active {
+  transition: all 0.3s;
+}
+.fab-enter-from, .fab-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
 </style>

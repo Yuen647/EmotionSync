@@ -53,8 +53,17 @@ public class GameController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGameState(@PathVariable int id) {
+    public ResponseEntity<Integer> deleteGameState(@PathVariable int id) {
         gameStateRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(id);
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<GameState>> getGameStatesByUsername(@PathVariable String username) {
+        List<GameState> gameStates = gameStateRepository.findAllByUserName(username);
+        if (gameStates.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(gameStates);
     }
 }

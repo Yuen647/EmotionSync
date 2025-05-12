@@ -20,15 +20,44 @@
     </p>
     <!-- 游戏选择 -->
     <GameSelection :games="games" @openGame="openGame" />
-  </div>
+    <!-- 其他内容 -->
+    <h2 class="section-title">🎮 游玩历史记录</h2>
+    <div class="card-container">
+          <div class="text-container">
+      <p>
+        你在游戏中获得的最高分和游玩时长会被记录下来，帮助你更好地了解自己的游戏表现。
+      </p>
+        <div v-if="gameHistory.length === 0" class="history-card">
+          <p>暂无游玩记录</p>
+        </div>
+        <!-- 按 gameType 合并后的统计卡片 -->
+        <div
+          v-else
+          v-for="stat in gameStats"
+          :key="stat.gameType"
+          class="history-card"
+        >
+          <h3>{{ stat.gameType }}</h3>
+          <p>游玩次数：{{ stat.playCount }}</p>
+          <p>总时长：{{ stat.totalDuration }} 秒</p>
+          <p>最高分：{{ stat.highestScore }}</p>
+          <p>最近一次：{{ formatDate(stat.lastPlay) }}</p>
+        </div>
+    </div>
+    </div>
 </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted , computed} from 'vue';
 import axios from 'axios';
 import GameSelection from './GameSelection.vue';
 import { useUserStore } from '@/store/userStore';
+// 格式化时间
+const formatDate = s =>
+  new Date(s).toLocaleString('zh-CN', { hour12: false })
+  
 const benefits = [
   {
     title: '减少焦虑压力',
@@ -66,8 +95,67 @@ const games = ref([ // 游戏列表
     image: 'faa/public/ctr/images/ctr.jpg',
   }
 ]);
+const gameHistory = ref([]); // 存储游玩历史数据
 
+// 定义表格的列
+const columns = [
+  {
+    title: '游戏名称',
+    dataIndex: 'gameType',
+    key: 'gameType',
+  },
+  {
+    title: '最高分',
+    dataIndex: 'highestScore',
+    key: 'highestScore',
+  },
+  {
+    title: '游玩时长 (秒)',
+    dataIndex: 'gameDuration',
+    key: 'gameDuration',
+  },
+];
 
+// 获取用户的游玩历史数据
+const fetchGameHistory = async () => {
+  try {
+    console.log(`正在从后端获取用户【${userName}】的游玩历史...`);
+    const response = await axios.get(`http://localhost:9000/api/gamestate/user/${userName}`);
+    gameHistory.value = response.data; // 将后端返回的数据赋值给表格数据
+    console.log('获取游玩历史的响应:', gameHistory.value);
+  } catch (error) {
+    console.error('获取游玩历史失败:', error);
+  }
+};
+
+const gameStats = computed(() => {
+  const map = {}
+  for (const item of gameHistory.value) {
+    let stat = map[item.gameType]
+    if (!stat) {
+      stat = {
+        gameType: item.gameType,
+        totalDuration: 0,
+        highestScore: item.highestScore,
+        playCount: 0,
+        lastPlay: item.startTime
+      }
+      map[item.gameType] = stat
+    }
+    // 累加时长
+    stat.totalDuration += item.gameDuration
+    // 更新最高分
+    stat.highestScore = Math.max(stat.highestScore, item.highestScore)
+    // 计次
+    stat.playCount++
+    // 最近一次
+    if (item.startTime > stat.lastPlay) {
+      stat.lastPlay = item.startTime
+    }
+  }
+  // 返回数组形式
+  return Object.values(map)
+})
 const userName = useUserStore().username; // 获取当前用户名
 
 const recommendedGame = ref(''); // 默认推荐2048
@@ -230,7 +318,7 @@ const getRecommendedGame = async () => {
 // 获取推荐游戏
 onMounted(() => {
   getRecommendedGame();
-
+  fetchGameHistory();
 });
 
 </script>
@@ -326,4 +414,11 @@ onMounted(() => {
   text-decoration: underline;
 }
 
+.history-card {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 </style>

@@ -50,6 +50,7 @@
           <img src="@/assets/white-noise-icon.jpg" alt="White Noise" class="icon" />
           <span>White Noise</span>
         </div>
+        <div class="spacer"></div>
         <div class="right">
           <div class="nav-item" @click="toggleFullscreen">
             <a class="no-underline">{{ isFullscreen ? '取消全屏' : '全屏' }}</a>
@@ -88,6 +89,24 @@
         />
         <span class="volume-label">{{ volume }}%</span>
       </div>
+
+      <!-- 睡眠计时器滑块 -->
+      <div class="sleep-slider-container">
+        <label for="sleep-timer">🕒 睡眠定时器（分钟）:</label>
+        <input
+            type="range"
+            min="0"
+            max="60"
+            step="1"
+            v-model="sleepMinutes"
+            @input="onSleepTimerChange"
+            class="sleep-slider"
+        />
+        <span class="sleep-label">
+          {{ sleepMinutes > 0 ? `${sleepMinutes} 分钟后停止` : '不定时' }}
+        </span>
+      </div>
+
     </div>
 
   </div>
@@ -97,7 +116,7 @@
 <script setup lang="ts">
 import '@/css/WhiteNoise/Popup.css';
 import { ref,onBeforeUnmount } from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import {useRouter} from "vue-router";
 import axios from 'axios';
@@ -112,6 +131,31 @@ const isPlaying = ref(false);
 const props = defineProps({
   selectedEmotion: String,
 });
+const sleepMinutes = ref(0);
+let sleepTimeoutId: number | null = null;
+
+function onSleepTimerChange() {
+  console.log(`设置睡眠定时器为 ${sleepMinutes.value} 分钟`);
+  // 如果正在播放，重新设定睡眠计时器
+  if (isPlaying.value) {
+    setSleepTimerIfNeeded();
+  }
+}
+
+function setSleepTimerIfNeeded() {
+  if (sleepTimeoutId) {
+    clearTimeout(sleepTimeoutId);
+    sleepTimeoutId = null;
+  }
+
+  if (sleepMinutes.value > 0 && isPlaying.value === true) {
+    sleepTimeoutId = window.setTimeout(() => {
+      backToController();
+      stopAudio();
+      alert('播放已按设定时间停止');
+    }, sleepMinutes.value * 60 * 1000);
+  }
+}
 
 // 你可以像这样直接访问 `props.selectedEmotion`，或者使用解构
 const { selectedEmotion } = props; // 这样你可以直接使用 selectedEmotion 变量
@@ -128,7 +172,7 @@ const buttons = ref([
   { icon: 'https://defonic.b-cdn.net/defonic/images/icons/ocean.svg', text: 'Boating', audio: 'https://ambicular.com/sounds/defonicprem/rowing160.mp3' },
 
 ]);
-
+const emit = defineEmits(['openEmotion']);
 // 组件卸载前停止播放
 onBeforeUnmount(() => {
   if(audioPlayer.value){
@@ -179,7 +223,10 @@ function playAudio(audioUrl: string) {
     //console.log(audio_name)
     audioPlayer.value.loop = true;
     audioPlayer.value.play()
-        .then(() => startTimer())
+        .then(() => {
+          startTimer();
+          setSleepTimerIfNeeded(); // 这行保留
+        })
         .catch((error) => console.error("播放音频失败:", error));
   } else if (audioPlayer.value.src.includes(audioUrl)) {
     if (audioPlayer.value.paused) {
@@ -203,7 +250,10 @@ function playAudio(audioUrl: string) {
     audioPlayer.value.volume = volume.value / 100;
     audioPlayer.value.loop = true;
     audioPlayer.value.play()
-        .then(() => startTimer())
+        .then(() => {
+          startTimer();
+          setSleepTimerIfNeeded(); // 这行保留
+        })
         .catch((error) => console.error("播放音频失败:", error));
   }
 }
@@ -277,7 +327,9 @@ function backToMain() {
   //返回主页
   router.push({ name: 'home' })
 }
-
+function backToEmotion() {
+  emit("openEmotion");
+}
 function toggleDarkMode() {
   isDarkMode.value = !isDarkMode.value;
 }

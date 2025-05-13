@@ -17,8 +17,9 @@
     />
 
     <!-- 显示 Popup 组件 -->
-    <Popup v-if="isPopupVisible"
+    <Popup v-if="isPopupVisible && !isEmotionSelectVisible"
            :selectedEmotion="selectedEmotion"
+           @openEmotion="openEmotion"
     />
   </div>
 </template>

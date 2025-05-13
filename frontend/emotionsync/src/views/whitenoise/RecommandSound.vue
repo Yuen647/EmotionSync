@@ -67,6 +67,18 @@
         <span>{{ audio.audioName }}</span>
       </div>
     </div>
+    <!-- 音量控制条 -->
+    <div v-if="isPlaying" class="volume-slider-container">
+      <input
+          type="range"
+          min="0"
+          max="100"
+          v-model="volume"
+          @input="handleVolumeChange"
+          class="volume-slider"
+      />
+      <span class="volume-label">{{ volume }}%</span>
+    </div>
   </div>
 </template>
 
@@ -76,11 +88,11 @@ import { defineProps, defineEmits } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import {useRouter} from "vue-router";
 import axios from 'axios';
-
+import '@/css/WhiteNoise/RecommandSound.css';
 const userStore = useUserStore();
 const router = useRouter();
 const currentAudioName = ref(''); // 保存当前播放音频的名称
-
+const isPlaying = ref(false);
 
 const props = defineProps({
   selectedEmotion: String,
@@ -110,6 +122,14 @@ function toggleFab() {
   fabOpen.value = !fabOpen.value;
 }
 
+const volume = ref(50); // 初始音量 50%
+
+function handleVolumeChange() {
+  console.log('音量设置为：', volume.value);
+  if (audioPlayer.value) {
+    audioPlayer.value.volume = volume.value / 100;
+  }
+}
 
 function playOrPause(audioUrl: string, audioName: string) {
   currentAudioName.value = audioName; // 更新当前音频名称
@@ -128,19 +148,22 @@ function playAudio(audioUrl: string) {
       backToController()
     }
     audio_name = currentAudioName.value
-    console.log(audio_name)
+    audioPlayer.volume = volume.value / 100;
+    isPlaying.value = !isPlaying.value;
     audioPlayer.loop = true;
     audioPlayer.play()
         .then(() => startTimer())
         .catch((error) => console.error("播放音频失败:", error));
   } else if (audioPlayer.src.includes(audioUrl)) { // 当前播放器已存在，并且播放的是同一个音频
     if (audioPlayer.paused) {
+      isPlaying.value = !isPlaying.value;
       audioPlayer.play()
           .then(() => startTimer())
           .catch((error) => console.error("播放音频失败:", error));
     } else {
       // 暂停播放
       // backToController();
+      isPlaying.value = !isPlaying.value;
       audioPlayer.pause();
       stopTimer();
     }
@@ -149,9 +172,9 @@ function playAudio(audioUrl: string) {
       backToController()
     }
     audio_name = currentAudioName.value
-    console.log(audio_name)
     stopAudio();
     audioPlayer = new Audio(audioUrl);
+    audioPlayer.volume = volume.value / 100;
     audioPlayer.loop = true;
     audioPlayer.play()
         .then(() => startTimer())
@@ -227,225 +250,3 @@ function backToEmotion() {
 }
 </script>
 
-<style scoped>
-
-/* 弹窗内容始终居中 */
-.popup-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 使弹窗居中 */
-  background-color: rgba(240, 240, 240, 0.9); /* 浅灰色背景，带透明度 */
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 600px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 2; /* 确保弹窗在背景之上 */
-}
-
-
-/* 按钮网格 */
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 每行 3 个按钮 */
-  gap: 10px;
-  justify-items: center;
-  margin-top: 70px;
-}
-
-.popup-header {
-  display: flex;
-  justify-content: center; /* 主轴居中 */
-  align-items: center; /* 交叉轴居中 */
-  padding: 10px 10px;
-  background-color: rgba(240, 240, 240, 0.1);
-  color: black;
-  border-radius: 8px;
-  position: relative; /* 为右侧内容留出空间 */
-}
-
-.left {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* 子元素水平居中 */
-}
-
-
-
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 每行 3 个按钮 */
-  gap: 10px;
-  justify-items: center;
-  margin-top: 70px;
-}
-
-/* 按钮样式 */
-.square-button {
-  width: 150px;
-  height: 150px;
-  background-color: rgba(240, 240, 240, 0); /* 与弹窗背景同色 */
-  border: 2px solid rgba(240, 240, 240, 0); /* 边框同色 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.square-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 悬停时添加阴影 */
-}
-
-.square-button img {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 8px;
-}
-
-/* 返回主页按钮 */
-.back-button {
-  position: fixed;
-  bottom: 20px; /* 改为右下角 */
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px; /* 图标与文字的间距 */
-  padding: 10px 15px;
-  font-size: 14px;
-  color: white;
-  background-color: transparent; /* 背景透明 */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 20;
-}
-
-.back-button:hover {
-  background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
-}
-
-/* 前往白噪声界面按钮 */
-.pop-up {
-  position: fixed;
-  bottom: 60px; /* 改为右下角 */
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px; /* 图标与文字的间距 */
-  padding: 10px 15px;
-  font-size: 14px;
-  color: white;
-  background-color: transparent; /* 背景透明 */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 20;
-}
-
-.pop-up:hover {
-  background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
-}
-/* 前往白噪声界面按钮 */
-.back-emotion {
-  position: fixed;
-  bottom: 100px; /* 改为右下角 */
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px; /* 图标与文字的间距 */
-  padding: 10px 15px;
-  font-size: 14px;
-  color: white;
-  background-color: transparent; /* 背景透明 */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 20;
-}
-
-.back-emotion:hover {
-  background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
-}
-/* 情绪标题的整体样式 */
-.selected-emotion-title {
-  text-align: center; /* 居中对齐 */
-  margin-top: 20px; /* 与顶栏的间距 */
-  font-size: 20px; /* 字体大小调整为更小 */
-  color: #4a4a4a; /* 深灰色字体 */
-  font-weight: bold; /* 加粗字体 */
-  background: linear-gradient(90deg, #fceabb, #f8b500); /* 渐变背景 */
-  padding: 10px 20px; /* 内边距，增加背景感 */
-  border-radius: 10px; /* 圆角边框 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加柔和阴影 */
-  display: inline-block; /* 使背景宽度只包裹内容 */
-  width: 80%; /* 使背景宽度自适应内容 */
-  max-width: 600px; /* 最大宽度 */
-  margin-left: auto; /* 左右自动边距，实现居中 */
-  margin-right: auto;
-}
-
-/* 为选定情绪文字添加特殊样式 */
-.emotion-highlight {
-  color: #ff5722; /* 橙红色字体 */
-  text-decoration: underline; /* 下划线强调 */
-  font-style: italic; /* 斜体显示 */
-}
-
-.fab-container {
-  position: fixed;
-  top: 100px;
-  right: 20px;
-  z-index: 100;
-}
-
-.fab-main {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: #f8b500;
-  color: white;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s;
-}
-
-.fab-main:hover {
-  background-color: #f1a100;
-}
-
-.fab-sub {
-  display: block;
-  margin-bottom: 10px;
-  width: 140px;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color: #333;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  text-align: left;
-}
-
-.fab-sub:hover {
-  background-color: #f0f0f0;
-}
-
-/* 动画效果 */
-.fab-enter-active, .fab-leave-active {
-  transition: all 0.3s;
-}
-.fab-enter-from, .fab-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-</style>

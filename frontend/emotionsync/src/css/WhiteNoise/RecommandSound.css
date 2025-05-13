@@ -1,30 +1,3 @@
-/* 背景 */
-/* 背景始终可见 */
-.background {
-    position: absolute;
-    top: 80px;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('@/assets/background.gif'); /* 设置背景图片 */
-    background-size: cover; /* 背景图覆盖整个页面 */
-    background-position: center; /* 居中背景图 */
-    z-index: 1; /* 确保背景在底层 */
-}
-/* 深色遮罩层 */
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0); /* 默认透明 */
-    transition: background-color 0.3s ease;
-}
-
-.overlay.dark-overlay {
-    background-color: rgba(0, 0, 0, 0.5); /* 深色模式时覆盖黑色半透明 */
-}
 /* 弹窗内容始终居中 */
 .popup-content {
     position: absolute;
@@ -41,56 +14,6 @@
 }
 
 
-
-/* 显示 UI 按钮 */
-.show-ui-button {
-    position: fixed;
-    bottom: 20px; /* 改为左下角 */
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px; /* 图标与文字的间距 */
-    padding: 10px 15px;
-    font-size: 14px;
-    color: white;
-    background-color: transparent; /* 背景透明 */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 20;
-}
-
-.show-ui-button:hover {
-    background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
-}
-
-.show-ui-button .button-icon {
-    width: 24px; /* 图标宽度 */
-    height: 24px; /* 图标高度 */
-}
-
-/* 返回主页按钮 */
-.back-button {
-    position: fixed;
-    bottom: 60px; /* 改为右下角 */
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px; /* 图标与文字的间距 */
-    padding: 10px 15px;
-    font-size: 14px;
-    color: white;
-    background-color: transparent; /* 背景透明 */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    z-index: 20;
-}
-
-.back-button:hover {
-    background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
-}
-
 /* 按钮网格 */
 .button-grid {
     display: grid;
@@ -102,63 +25,22 @@
 
 .popup-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 30px; /* 调节左右内边距来改变间距 */
+    justify-content: center; /* 主轴居中 */
+    align-items: center; /* 交叉轴居中 */
+    padding: 10px 10px;
     background-color: rgba(240, 240, 240, 0.1);
     color: black;
     border-radius: 8px;
-    width: 100%;
+    position: relative; /* 为右侧内容留出空间 */
 }
 
 .left {
     display: flex;
     align-items: center;
-    margin-left: -40px; /* 向左移动 10px */
-}
-.spacer {
-    flex-grow: 1;
-    max-width: 60px;  /* 控制撑开的最大距离 */
-}
-.icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
+    justify-content: center; /* 子元素水平居中 */
 }
 
-.right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
 
-.nav-item {
-    position: relative;
-    padding: 10px;
-    cursor: pointer;
-    color: black;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.nav-item:hover {
-    color: #007bff; /* 悬停时文本颜色 */
-}
-
-.nav-item::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: transparent;
-    transition: background-color 0.3s;
-}
-
-.nav-item:hover::after {
-    background-color: #007bff; /* 悬停时显示下划线 */
-}
 
 .button-grid {
     display: grid;
@@ -189,9 +71,74 @@
 }
 
 .square-button img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     margin-bottom: 8px;
+}
+
+/* 返回主页按钮 */
+.back-button {
+    position: fixed;
+    bottom: 20px; /* 改为右下角 */
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 图标与文字的间距 */
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
+    background-color: transparent; /* 背景透明 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.back-button:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
+}
+
+/* 前往白噪声界面按钮 */
+.pop-up {
+    position: fixed;
+    bottom: 60px; /* 改为右下角 */
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 图标与文字的间距 */
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
+    background-color: transparent; /* 背景透明 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.pop-up:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
+}
+/* 前往白噪声界面按钮 */
+.back-emotion {
+    position: fixed;
+    bottom: 100px; /* 改为右下角 */
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 图标与文字的间距 */
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
+    background-color: transparent; /* 背景透明 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.back-emotion:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* 悬停时添加半透明背景 */
 }
 /* 情绪标题的整体样式 */
 .selected-emotion-title {
@@ -217,6 +164,7 @@
     text-decoration: underline; /* 下划线强调 */
     font-style: italic; /* 斜体显示 */
 }
+
 .fab-container {
     position: fixed;
     top: 100px;
@@ -268,47 +216,7 @@
     opacity: 0;
     transform: translateY(10px);
 }
-.playback-controls {
-    margin-top: 20px;
-    padding: 10px;
-    background: #ffffffdd;
-    border-radius: 10px;
-    text-align: center;
-}
 
-.audio-name {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.progress-bar {
-    height: 10px;
-    background: #eee;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.progress {
-    height: 100%;
-    background-color: #4caf50;
-    transition: width 0.5s;
-}
-
-.playback-buttons button {
-    margin: 0 5px;
-    padding: 5px 12px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    background-color: #2196f3;
-    color: white;
-    cursor: pointer;
-}
-
-.playback-buttons button:hover {
-    background-color: #1976d2;
-}
 .volume-slider-container {
     display: flex;
     flex-direction: column;    /* 垂直排列 */
@@ -345,22 +253,4 @@
 }
 .volume-label {
     font-size: 14px;
-}
-
-.sleep-slider-container {
-    margin-top: 1.5em;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-    align-items: flex-start;
-}
-
-.sleep-slider {
-    width: 100%;
-    accent-color: #888;
-}
-
-.sleep-label {
-    font-size: 14px;
-    color: #666;
 }

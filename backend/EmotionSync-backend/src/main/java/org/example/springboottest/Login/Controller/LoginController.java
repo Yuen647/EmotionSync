@@ -20,7 +20,11 @@ public class LoginController {
     private LoginService loginService;
     @Autowired
     private JwtUtil jwtUtil;
-
+    /**
+     * 用户登录接口
+     * 接收JSON格式的请求体，包含用户名和密码
+     * 验证用户信息并返回JWT令牌
+     */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
@@ -43,9 +47,11 @@ public class LoginController {
         }
 
     }
-
-
-    // 注册接口
+    /**
+     * 用户注册接口
+     * 接收用户名、邮箱和密码，进行注册处理
+     * 注册成功后返回JWT令牌
+     */
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> requestData) {
         String email = requestData.get("email");
@@ -75,7 +81,11 @@ public class LoginController {
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "注册失败"));
         }
     }
-    // 修改密码部分
+    /**
+     * 用户密码重置接口
+     * 根据邮箱和用户名验证用户身份，允许重置密码
+     * 成功后返回新的JWT令牌
+     */
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody Map<String, String> requestData) {
         String email = requestData.get("email");

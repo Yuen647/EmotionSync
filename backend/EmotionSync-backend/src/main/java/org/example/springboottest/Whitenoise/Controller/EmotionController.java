@@ -20,7 +20,12 @@ public class EmotionController {
         this.recommenderService = recommenderService;
     }
 
-    // 接收情绪数据并返回推荐结果
+    /**
+     * 接收情绪请求，返回对应的音频推荐列表
+     *
+     * @param request 用户情绪请求，包含情绪标签及推荐数量
+     * @return 推荐的音频列表
+     */
     @PostMapping("/recommend")
     public List<Audio> recommendAudio(@RequestBody EmotionRequest request) {
         Map<String, Double> userEmotionVector = new HashMap<>();
@@ -28,7 +33,9 @@ public class EmotionController {
         return recommenderService.recommend(userEmotionVector, request.getNumRecommendations());
     }
 
-    // 内部类用于接收请求数据
+    /**
+     * 内部静态类，用于接收情绪推荐请求体
+     */
     public static class EmotionRequest {
         private String emotion;
         private int numRecommendations;

@@ -3,55 +3,38 @@ package org.example.springboottest.User.Entity;
 
 import lombok.Data;
 import jakarta.persistence.*;
-
+/**
+ * 用户实体类
+ * 对应数据库中的 User 表
+ */
 @Entity
 @Data
 @Table(name = "User")
 public class User {
+    /**
+     * 用户 ID，主键，自增
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 自动生成并自增
     @Column(name = "user_id")
-    private Long userId;  // 将 userId 改为 Long 类型
-
+    private Long userId;
+    /**
+     * 用户名
+     */
     private String username; // 主键
-
+    /**
+     * 密码
+     */
     private String password;
-
+    /**
+     * 邮箱
+     */
     private String email;
-
+    /**
+     * 身份信息（如用户、管理员）
+     */
     private String identity;
 
-    // Getters and Setters
-    public String getUsername() {
-        return username;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(String identity) {
-        this.identity = identity;
-    }
 
 }

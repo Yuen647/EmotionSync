@@ -364,3 +364,16 @@
     font-size: 14px;
     color: #666;
 }
+.pause-button {
+    margin-left: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.pause-button:hover {
+    background-color: #666;
+}

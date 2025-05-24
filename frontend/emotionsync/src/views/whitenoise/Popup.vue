@@ -61,6 +61,9 @@
           <div class="nav-item" @click="toggleDarkMode">
             <a class="no-underline">{{ isDarkMode ? '浅色模式' : '深色模式' }}</a>
           </div>
+          <div class="nav-item" @click="toggleAudio">
+            <a class="no-underline">{{ isAudio ? '单一音频模式' : '混合音频模式' }}</a>
+          </div>
         </div>
       </div>
 
@@ -105,6 +108,10 @@
         <span class="sleep-label">
           {{ sleepMinutes > 0 ? `${sleepMinutes} 分钟后停止` : '不定时' }}
         </span>
+        <!-- 新增暂停按钮 -->
+        <button class="pause-button" @click="pauseAudio" v-if="isPlaying">
+          ⏸️ 暂停
+        </button>
       </div>
 
     </div>
@@ -122,10 +129,12 @@ import {useRouter} from "vue-router";
 import axios from 'axios';
 
 const userStore = useUserStore();
+const router = useRouter();
+
 const isFullscreen = ref(false);// 控制是否全屏
 const isUIVisible = ref(true); // 控制 UI 是否可见
 const isDarkMode = ref(false); // 控制深色模式
-const router = useRouter();
+const isAudio = ref(false);// 控制单一音频和混合音频模式
 const currentAudioName = ref(''); // 保存当前播放音频的名称
 const isPlaying = ref(false);
 const props = defineProps({
@@ -175,7 +184,7 @@ const buttons = ref([
 const emit = defineEmits(['openEmotion']);
 // 组件卸载前停止播放
 onBeforeUnmount(() => {
-  if(audioPlayer.value){
+  if(audioPlayer){
     backToController();
     stopAudio();
     stopTimer();
@@ -187,74 +196,85 @@ function toggleFab() {
   fabOpen.value = !fabOpen.value;
 }
 
-const volume = ref(50); // 初始音量 50%
-
-function handleVolumeChange() {
-  console.log('音量设置为：', volume.value);
-  if (audioPlayer.value) {
-    audioPlayer.value.volume = volume.value / 100;
-  }
-}
 
 
-function playOrPause(audioUrl: string, audioName: string) {
-  currentAudioName.value = audioName; // 更新当前音频名称
-  playAudio(audioUrl); // 调用前面定义的 playAudio 方法
-}
+
+
+
 
 //let audioPlayer: HTMLAudioElement | null = null;
-const audioPlayer = ref<HTMLAudioElement | null>(null);// 变成响应式的
+//const audioPlayer = ref<HTMLAudioElement | null>(null);// 变成响应式的
 const playDuration = ref(0); // 播放时长（秒）
 let timer: number | null = null; // 计时器
 let audio_name = "rain";
 
 
+const volume = ref(50); // 初始音量 50%
+// 音量统一调节
+function handleVolumeChange() {
+  for (const name in audioPlayers.value) {
+    audioPlayers.value[name].volume = volume.value / 100;
+  }
+}
+// 管理多个音频实例
+const audioPlayers = ref<{ [key: string]: HTMLAudioElement }>({});
+let audioPlayer: HTMLAudioElement | null = null;
 
-function playAudio(audioUrl: string) {
-  if (!audioPlayer.value) {
-    audioPlayer.value = new Audio(audioUrl);
-    console.log(audioPlayer.value.paused);
-    audioPlayer.value.volume = volume.value / 100; // 加这句
-    isPlaying.value = !isPlaying.value;
-    if(audio_name != null && audio_name != currentAudioName.value) {
-      backToController()
-    }
-    audio_name = currentAudioName.value
-    //console.log(audio_name)
-    audioPlayer.value.loop = true;
-    audioPlayer.value.play()
-        .then(() => {
-          startTimer();
-          setSleepTimerIfNeeded(); // 这行保留
-        })
-        .catch((error) => console.error("播放音频失败:", error));
-  } else if (audioPlayer.value.src.includes(audioUrl)) {
-    if (audioPlayer.value.paused) {
-      isPlaying.value = !isPlaying.value;
-      audioPlayer.value.play()
-          .then(() => startTimer())
-          .catch((error) => console.error("播放音频失败:", error));
+function playOrPause(audioUrl: string, audioName: string) {
+  // currentAudioName.value = audioName; // 更新当前音频名称
+  // playAudio(audioUrl); // 调用前面定义的 playAudio 方法
+  if (!isAudio.value) {
+    // 单一音频模式
+    // stopAllAudios(); // 先停止所有音频
+    playSingleAudio(audioUrl, audioName);
+  } else {
+    // 混合音频模式
+    toggleMixedAudio(audioUrl, audioName);
+  }
+}
+let currentAudioUrl = "";
+// 单一音频模式
+function playSingleAudio(audioUrl: string, audioName: string) {
+  currentAudioName.value = audioName;
+
+  // 如果当前播放器存在，且正在播放同一个音频
+  if (audioPlayer && currentAudioUrl === audioUrl) {
+    if (audioPlayer.paused) {
+      audioPlayer.play()
+          .then(() => {
+            isPlaying.value = true;
+            startTimer();
+          })
+          .catch((error) => console.error("播放失败:", error));
     } else {
-      //backToController();
-      isPlaying.value = !isPlaying.value;
-      audioPlayer.value.pause();
+      backToController();
+      audioPlayer.pause();
+      isPlaying.value = false;
       stopTimer();
     }
   } else {
-    if(audio_name != null && audio_name != currentAudioName.value) {
-      backToController()
+    // 切换或首次播放新的音频
+    if (audioPlayer) {
+      backToController();
+      audioPlayer.pause(); // 停止旧播放器
+      stopTimer();
     }
-    audio_name = currentAudioName.value
-    stopAudio();
-    audioPlayer.value = new Audio(audioUrl);
-    audioPlayer.value.volume = volume.value / 100;
-    audioPlayer.value.loop = true;
-    audioPlayer.value.play()
+
+    const newPlayer = new Audio(audioUrl);
+    newPlayer.loop = true;
+    newPlayer.volume = volume.value / 100;
+
+    newPlayer.play()
         .then(() => {
+          audioPlayer = newPlayer;
+          currentAudioUrl = audioUrl;
+          audioPlayers.value[audioName] = newPlayer;
+          isPlaying.value = true;
           startTimer();
-          setSleepTimerIfNeeded(); // 这行保留
+          setSleepTimerIfNeeded();
+          console.log("播放成功", audioPlayer.paused);
         })
-        .catch((error) => console.error("播放音频失败:", error));
+        .catch((error) => console.error("播放失败:", error));
   }
 }
 
@@ -267,6 +287,64 @@ function stopAudio() {
     playDuration.value = 0; // 重置播放时长
   }
 }
+
+// 混合播放
+function toggleMixedAudio(audioUrl: string, audioName: string) {
+  const existingPlayer = audioPlayers.value[audioName];
+
+  if (existingPlayer) {
+    if (existingPlayer.paused) {
+      // 如果已存在但是暂停状态，则播放
+      existingPlayer.play().catch((error) => console.error("播放音频失败:", error));
+    } else {
+      // 如果正在播放，则暂停
+      existingPlayer.pause();
+    }
+  } else {
+    // 如果不存在该音频播放器，则新建一个播放器并播放
+    const newPlayer = new Audio(audioUrl);
+    newPlayer.loop = true;
+    newPlayer.volume = volume.value / 100;
+    isPlaying.value = !isPlaying.value;
+    newPlayer.play()
+        .then(() => {
+          audioPlayers.value[audioName] = newPlayer;
+        })
+        .catch((error) => console.error("播放音频失败:", error));
+  }
+}
+// 暂停播放
+function stopAllAudios() {
+  for (const name in audioPlayers.value) {
+    const audio = audioPlayers.value[name];
+    audio.pause();
+    audio.currentTime = 0;
+  }
+  audioPlayers.value = {};
+  stopTimer();
+  playDuration.value = 0;
+  isPlaying.value = false;
+}
+
+function pauseAudio() {
+  if (isAudio.value) {
+    for (const player of Object.values(audioPlayers.value)) {
+      if (!player.paused) {
+        player.pause();
+      }
+    }
+    isPlaying.value = false;
+  }
+  else {
+    if (audioPlayer && !audioPlayer.paused) {
+      audioPlayer.pause();
+      isPlaying.value = false;
+      stopTimer();
+    }
+  }
+}
+
+
 
 function startTimer() {
   if (!timer) {
@@ -298,6 +376,9 @@ function toggleFullscreen() {
 
 function toggleUI() {
   isUIVisible.value = !isUIVisible.value;
+}
+function toggleAudio() {
+  isAudio.value = !isAudio.value;
 }
 
 function backToController(){

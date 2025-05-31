@@ -156,7 +156,7 @@
       </template>
       <div v-if="type === 'reset-password'">
         <el-button type="primary" class="w-full" style="height: 45px;" :style="buttonStyle"
-                   :disabled="!form.email" @click="handleResetPasswordEmail">
+                   :disabled="!form.email" @click="handleResetPasswordEmail" data-test="reset-password-button">
           重新设置
         </el-button>
       </div>

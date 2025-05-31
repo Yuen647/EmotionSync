@@ -9,7 +9,6 @@ import flushPromises from 'flush-promises';
 
 // 模拟全局 alert
 global.alert = vi.fn();
-
 // 创建完整路由配置
 const routes = [
     {
@@ -25,7 +24,17 @@ const routes = [
 ];
 // 模拟axios
 vi.mock('axios')
+const mockRouter = {
+  push: vi.fn()
+}
 
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useRouter: () => mockRouter
+  }
+})
 // 创建模拟路由
 // const routes = [
 //     { path: '/', name: 'home' },
@@ -42,10 +51,7 @@ const pinia = createPinia()
 
 describe('LoginComponent', () => {
     let wrapper
-    const mockRouter = {
-        push: vi.fn()
-    }
-
+    
     beforeEach(() => {
         vi.clearAllMocks()
         wrapper = mount(LoginComponent, {
@@ -317,14 +323,12 @@ describe('LoginComponent', () => {
     describe('重置密码功能', () => {
         beforeEach(() => {
             wrapper.vm.type = 'reset-password'
-            wrapper.vm.form = {
-                email: 'reset@example.com',
-                code: '654321',
-                password: 'newpassword'
-            }
+            wrapper.vm.form.email = 'reset@example.com'
+            wrapper.vm.form.code = '654321'
+            wrapper.vm.form.password = 'newpassword'
         })
 
-        it.skip('成功重置密码', async () => {
+        it('成功重置密码', async () => {
             // 模拟验证码验证成功
             axios.post.mockImplementation(url => {
                 if (url.includes('verify/check')) {
@@ -340,7 +344,7 @@ describe('LoginComponent', () => {
                 }
             })
 
-            await wrapper.find('button').trigger('click')
+            await wrapper.find('[data-test="reset-password-button"]').trigger('click')
 
             expect(axios.post).toHaveBeenNthCalledWith(
                 1,

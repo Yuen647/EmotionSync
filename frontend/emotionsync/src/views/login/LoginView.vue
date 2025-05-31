@@ -2,28 +2,28 @@
   <div class="w-screen h-screen bg-[#D1E8E7] relative">
     <div class="bg-white w-[500px] rounded-[15px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 p-[80px] box-border flex flex-col gap-[16px]"
          style="box-shadow: 0px 6px 24px 0px rgba(14, 182, 152, 0.10);">
-      <div class="text-[22px] font-bold">
+      <div class="text-[22px] font-bold" data-testid="auth-title">
         {{ type === 'login' ? '登录' : type === 'register' ? '注册' : '重设密码' }}
       </div>
       <!--表示切换登录/注册/修改密码状态-->
       <div class="text-right text-[rgba(0,0,0,0.65)] text-[14px]">
         <template v-if="type === 'login'">
-          没有账号？<span class="text-[#0EB698] cursor-pointer" @click="toggleMode">
+          没有账号？<span class="text-[#0EB698] cursor-pointer" data-testid="toggle-to-register" @click="toggleMode">
                         注册
                     </span>
         </template>
         <template v-if="type === 'register'">
-          已有账号？<span class="text-[#0EB698] cursor-pointer" @click="toggleMode">
+          已有账号？<span class="text-[#0EB698] cursor-pointer" data-testid="toggle-to-login" @click="toggleMode">
                         登录
                     </span>
         </template>
         <template v-if="type === 'reset-password'">
-                    <span class="text-[#0EB698] cursor-pointer" @click="type = 'login'">
+                    <span class="text-[#0EB698] cursor-pointer" data-testid="back-to-login" @click="type = 'login'">
                         登录
                     </span>
         </template>
       </div>
-      <div v-if="type === 'reset-password' && waitVerify" class="text-[rgba(0,0,0,0.85)] text-[14px]">
+      <div v-if="type === 'reset-password' && waitVerify" class="text-[rgba(0,0,0,0.85)] text-[14px]" data-testid="reset-password-hint">
         设置一个新的密码
       </div>
 
@@ -126,14 +126,14 @@
           </template>
         </el-input>
 
-        <div v-if="codeSent" class="text-green-500 text-sm mt-1">验证码已发送</div>
+        <div v-if="codeSent" class="text-green-500 text-sm mt-1" data-testid="code-sent-message">验证码已发送</div>
 
       </div>
       <div v-if="(type === 'register' && !waitVerify) || (type === 'reset-password' && waitVerify)"
            class='opacity-35 text-left text-[14px]'>密码请输入至少6个字符，包括字母和数字</div>
-      <div v-if="type === 'reset-password' && !waitVerify" class="text-[rgba(0,0,0,0.35)] text-[12px]">请重新设置密码，密码请输入至少6个字符，包括字母和数字</div>
+      <div v-if="type === 'reset-password' && !waitVerify" class="text-[rgba(0,0,0,0.35)] text-[12px]" data-testid="toggle-to-reset">请重新设置密码，密码请输入至少6个字符，包括字母和数字</div>
       <div class="text-right">
-                <span v-if="type === 'login'" class="text-[#0EB698] text-[14px] cursor-pointer"
+                <span v-if="type === 'login'" class="text-[#0EB698] text-[14px] cursor-pointer" data-testid="forgot-password"
                       @click="type = 'reset-password'">忘记密码?</span>
       </div>
       <template v-if="type === 'login'">
@@ -149,7 +149,7 @@
 
         <div>
           <el-button type="primary" class="w-full" style="height: 45px;" :style="buttonStyle"
-                     @click="handleSignup">
+                     data-testid="register-button" @click="handleSignup">
             注册
           </el-button>
         </div>
@@ -215,7 +215,7 @@ const handleLogin = async () => {
     }
   } catch (error) {
     console.error('登录失败:', error);
-    alert(error.response.data.message || '网络错误，请稍后再试');
+    alert(error.response?.data.message || '网络错误，请稍后再试');
   }
 };
 
@@ -294,29 +294,63 @@ const handleResetPasswordEmail = async () => {
 };
 
 
+// const sendCode = async () => {
+//   if (countdown.value > 0) return // 避免重复点击
+//   try {
+//     const response = await axios.post('http://localhost:9000/api/verify/send', { email: form.email });
+//     if (response.data.message === '验证码已发送') {
+//       codeSent.value = true; // ✅ 显示“验证码已发送”
+//       showVerifyInput.value = true;  // 显示验证码输入框
+//       countdown.value = 60; // 设置倒计时为 60 秒
+//       timer.value = setInterval(() => {
+//         countdown.value--
+//         if (countdown.value <= 0) {
+//           clearInterval(timer.value)
+//         }
+//       }, 1000)
+//     } else {
+//       alert(response.data.message || '验证码发送失败');
+//     }
+//   } catch (error) {
+//     console.error('发送验证码失败:', error);
+//     alert(error.response?.data.message || '网络错误，请稍后再试');
+//   }
+// };
 const sendCode = async () => {
-  if (countdown.value > 0) return // 避免重复点击
+  if (countdown.value > 0) return;
+
   try {
-    const response = await axios.post('http://localhost:9000/api/verify/send', { email: form.email });
-    if (response.data.message === '验证码已发送') {
-      codeSent.value = true; // ✅ 显示“验证码已发送”
-      showVerifyInput.value = true;  // 显示验证码输入框
-      countdown.value = 60; // 设置倒计时为 60 秒
+    const response = await axios.post('http://localhost:9000/api/verify/send', {
+      email: form.email
+    });
+
+    if (response.data?.message === '验证码已发送') {
+      codeSent.value = true;
+      countdown.value = 60;
+
+      // 使用 clearInterval 确保不会重复设置定时器
+      if (timer.value) clearInterval(timer.value);
+
       timer.value = setInterval(() => {
-        countdown.value--
-        if (countdown.value <= 0) {
-          clearInterval(timer.value)
+        countdown.value--;
+        if (countdown.value <= 0 && timer.value) {
+          clearInterval(timer.value);
+          timer.value = null;
         }
-      }, 1000)
+      }, 1000);
     } else {
-      alert(response.data.message || '验证码发送失败');
+      // 使用更安全的错误处理
+      alert(response.data?.message || '验证码发送失败');
     }
   } catch (error) {
     console.error('发送验证码失败:', error);
-    alert(error.response?.data.message || '网络错误，请稍后再试');
+    // 安全地获取错误信息
+    const errorMessage = error.response?.data?.message ||
+        error.message ||
+        '网络错误，请稍后再试';
+    alert(errorMessage);
   }
 };
-
 
 const toggleMode = () => {
   if (type.value === 'login') {

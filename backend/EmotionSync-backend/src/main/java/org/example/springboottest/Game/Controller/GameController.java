@@ -23,6 +23,11 @@ public class GameController {
         return gameStateRepository.findAll();
     }
 
+    /**
+     * 获取用户的某具体游戏数据
+     * 接收username和gameType
+     * 返回游戏数据
+     */
     @GetMapping("/{username}/{gameType}")
     public ResponseEntity<GameState> getGameStateByUserAndGameType(
             @PathVariable String username,
@@ -45,6 +50,11 @@ public class GameController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 添加用户的游戏数据
+     * 接收gamestate，即游戏数据核用户数据
+     * 返回是否成功
+     */
     @PostMapping("/add")
     public ResponseEntity<GameState> addOrUpdateGameState(@RequestBody GameState gameState) {
         gameState.setStartTime();
@@ -52,12 +62,22 @@ public class GameController {
         return ResponseEntity.status(HttpStatus.CREATED).body(gameState);
     }
 
+    /**
+     * 删除用户的游戏数据
+     * 接收userid
+     * 返回是否成功
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> deleteGameState(@PathVariable int id) {
         gameStateRepository.deleteById(id);
         return ResponseEntity.ok(id);
     }
 
+    /**
+     * 获取用户的历史游戏数据
+     * 接收username
+     * 返回游戏数据
+     */
     @GetMapping("/user/{username}")
     public ResponseEntity<List<GameState>> getGameStatesByUsername(@PathVariable String username) {
         List<GameState> gameStates = gameStateRepository.findAllByUserName(username);

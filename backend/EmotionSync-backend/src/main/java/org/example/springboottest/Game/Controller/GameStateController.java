@@ -15,20 +15,31 @@ public class GameStateController {
     @Autowired
     private GameStateRepository gameStateRepository;
 
-    // 获取所有游戏记录
+    /**
+     * 获取所有游戏
+     * 返回游戏数据
+     */
     @GetMapping("/")
     public List<GameState> getAllGameStates() {
         return gameStateRepository.findAll();
     }
 
-    // 根据 ID 获取单个游戏记录
+    /**
+     * 获取单个游戏数据
+     * 接收id
+     * 返回游戏数据
+     */
     @GetMapping("/{id}")
     public ResponseEntity<GameState> getGameStateById(@PathVariable("id") int id) {
         Optional<GameState> gameState = gameStateRepository.findById(id);
         return gameState.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 根据用户名和游戏类型查询
+    /**
+     * 获取用户的游戏数据
+     * 接收username和gameType
+     * 返回游戏数据
+     */
     @GetMapping("/user/{userName}/game/{gameType}")
     public ResponseEntity<GameState> getGameStateByUserAndGameType(@PathVariable String userName, @PathVariable String gameType) {
         GameState gameState = gameStateRepository.findByUserNameAndGameType(userName, gameType);
@@ -38,7 +49,11 @@ public class GameStateController {
         return ResponseEntity.ok(gameState);
     }
 
-    // 添加或更新游戏状态
+    /**
+     * 添加或更新游戏数据
+     * 接收gamestate
+     * 返回是否成功，游戏数据
+     */
     @PostMapping("/add")
     public ResponseEntity<GameState> addOrUpdateGameState(@RequestBody GameState gameState) {
         // 如果已存在相同用户和游戏类型的记录，则更新
@@ -56,7 +71,11 @@ public class GameStateController {
         return ResponseEntity.ok(gameState);
     }
 
-    // 删除游戏状态
+    /**
+     * 删除用户的游戏数据
+     * 接收id
+     * 返回是否成功
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteGameState(@PathVariable("id") int id) {
         if (!gameStateRepository.existsById(id)) {

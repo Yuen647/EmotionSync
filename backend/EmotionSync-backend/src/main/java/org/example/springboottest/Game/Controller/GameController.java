@@ -16,7 +16,7 @@ import java.util.List;
 public class GameController {
 
     @Autowired
-    private GameStateRepository gameStateRepository;
+    GameStateRepository gameStateRepository;
 
     @GetMapping
     public List<GameState> getAllGameStates() {

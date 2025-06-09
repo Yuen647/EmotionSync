@@ -61,4 +61,9 @@ public class Audio {
 
     public Audio() {
     }
+    public Audio(String audioName, String audioSrc, String audioIcon){
+        this.audioName = audioName;
+        this.audioSrc = audioSrc;
+        this.audioIcon = audioIcon;
+    }
 }

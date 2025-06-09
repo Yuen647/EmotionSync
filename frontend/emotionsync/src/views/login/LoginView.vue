@@ -28,7 +28,7 @@
       </div>
 
 
-      <el-input type="text" v-model="form.username" style="--el-color-primary: #0EB698"
+      <el-input type="text" v-model="form.username" style="--el-color-primary: #0EB698" data-testid="username"
                 v-if="type === 'login' || (type === 'reset-password' && !waitVerify) || (type === 'register' && !waitVerify)">
         <template #prefix>
           <!-- 替换为小人图标 -->
@@ -138,7 +138,7 @@
       </div>
       <template v-if="type === 'login'">
         <div>
-          <el-button type="primary" class="w-full" style="height: 45px;" :style="buttonStyle"
+          <el-button type="primary" class="w-full" style="height: 45px;" :style="buttonStyle" data-testid="submit-login"
                      @click="handleLogin">
             登录
           </el-button>
@@ -156,7 +156,7 @@
       </template>
       <div v-if="type === 'reset-password'">
         <el-button type="primary" class="w-full" style="height: 45px;" :style="buttonStyle"
-                   :disabled="!form.email" @click="handleResetPasswordEmail" data-test="reset-password-button">
+                   :disabled="!form.email" @click="handleResetPasswordEmail" data-testid="reset-password-button">
           重新设置
         </el-button>
       </div>

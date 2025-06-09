@@ -1,4 +1,3 @@
-// LoginComponent.spec.js
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import LoginComponent from '@/views/login/LoginView.vue'
@@ -6,6 +5,7 @@ import axios from 'axios'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createPinia } from 'pinia'
 import flushPromises from 'flush-promises';
+import { createTestingPinia } from '@pinia/testing'
 
 // 模拟全局 alert
 global.alert = vi.fn();
@@ -72,22 +72,6 @@ describe('LoginComponent', () => {
             expect(wrapper.find('input[type="password"]').exists()).toBe(true)
             expect(wrapper.find('[data-testid="forgot-password"]').exists()).toBe(true)
             expect(wrapper.find('button').text()).toBe('登录')
-        })
-
-        it.skip('当路由参数为reset-password时显示重置密码表单', async () => {
-            // 正确设置路由参数
-            router.push({ query: { type: 'reset-password' } })
-            await router.isReady()
-
-            const wrapper = mount(LoginComponent, {
-                global: {
-                    plugins: [router, pinia]
-                }
-            })
-
-            await wrapper.vm.$nextTick()
-            expect(wrapper.vm.type).toBe('reset-password')
-            expect(wrapper.find('[data-testid="auth-title"]').text()).toBe('重设密码')
         })
     })
 
@@ -252,60 +236,49 @@ describe('LoginComponent', () => {
     describe('注册功能', () => {
         beforeEach(() => {
             wrapper.vm.type = 'register'
-            wrapper.vm.form = {
-                email: 'test1@example.com',
-                username: 'newuser1',
-                password: 'newpassword123',
-                code: '123456'
-            }
+            wrapper.vm.form.email = 'test1@example.com'
+            wrapper.vm.form.username = 'newuser1'
+            wrapper.vm.form.password = 'newpassword123'
+            wrapper.vm.form.code = '123456'
         })
 
-        it.skip('成功注册', async () => {
-
-            await wrapper.vm.$nextTick();
-
-            // 模拟所有可能的 API 调用
+        it('成功注册', async () => {
+            // 模拟验证码验证成功
             axios.post.mockImplementation(url => {
-                if (url.includes('verify/send')) {
-                    // 发送验证码请求 - 不应在注册过程中被调用
-                    return Promise.resolve({ data: { message: '验证码已发送' } });
-                }
                 if (url.includes('verify/check')) {
-                    // 验证码验证请求
-                    return Promise.resolve({ data: { message: '验证码正确' } });
+                    return Promise.resolve({data: {message: '验证码正确'}})
                 }
                 if (url.includes('register')) {
-                    // 注册请求
                     return Promise.resolve({
-                        data: {
-                            success: true,
-                            token: 'register-token'
+                    data: {
+                        success: true,
+                        message: '注册成功',
+                        token: 'register-token'
                         }
-                    });
+                    })
                 }
-            });
+            })
 
-            // 确保只找到注册按钮
-            const registerButton = wrapper.find('[data-testid="register-button"]');
-            expect(registerButton.exists()).toBe(true);
+            await wrapper.find('[data-testid="register-button"]').trigger('click')
 
-            // 触发注册按钮点击
-            await registerButton.trigger('click');
-            await flushPromises(); // 等待所有异步操作完成
-            console.log('axios.post.calls = ', axios.post.mock.calls);
+            expect(axios.post).toHaveBeenNthCalledWith(
+                1,
+                'http://localhost:9000/api/verify/check',
+                {
+                    email: 'test1@example.com',
+                    code: '123456'
+                })
 
-            // 验证 API 调用顺序
-            expect(axios.post.mock.calls[0][0]).toBe('http://localhost:9000/api/verify/check');
-            expect(axios.post.mock.calls[0][1]).toMatchObject({
-                email: wrapper.vm.form.email,
-                code: wrapper.vm.form.code
-            });
+            expect(axios.post).toHaveBeenNthCalledWith(
+                2,
+                'http://localhost:9000/myHello/register',
+                wrapper.vm.form
+            )
 
-            // 验证 token 存储
-            expect(localStorage.getItem('token')).toBe('register-token');
-            // 验证路由跳转
-            // expect(mockRouter.push).toHaveBeenCalledWith({ name: 'home' })
-        });
+            await wrapper.vm.$nextTick()
+            expect(localStorage.getItem('token')).toBe('register-token')
+            expect(mockRouter.push).toHaveBeenCalledWith({name: 'home'})
+        })
 
         it('验证码错误', async () => {
             axios.post.mockResolvedValue({
@@ -344,7 +317,7 @@ describe('LoginComponent', () => {
                 }
             })
 
-            await wrapper.find('[data-test="reset-password-button"]').trigger('click')
+            await wrapper.find('[data-testid="reset-password-button"]').trigger('click')
 
             expect(axios.post).toHaveBeenNthCalledWith(
                 1,

@@ -30,9 +30,8 @@ public class ProfileController {
     @PostMapping("/email")
     public String getEmail(@RequestBody Map<String, String> requestData) {
         String username = requestData.get("username");
-        return profileRepository.findById(username)
-                .map(User::getEmail)
-                .orElse("User not found");
+        User user = profileRepository.findByUsername(username);
+        return user.getEmail();
     }
 
     private String calculateIdentity(List<QuizResult> results) {

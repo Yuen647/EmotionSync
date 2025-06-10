@@ -19,7 +19,7 @@ public class SecurityConfig {
                         .requestMatchers(
                             "/myHello/**",
                             "/api/verify/**",
-                            "/api/whitenoise/**",
+                            //"/api/whitenoise/**",
                             "/api/notes/**",
                             "/api/notes/create",
                             "/api/notes/list",

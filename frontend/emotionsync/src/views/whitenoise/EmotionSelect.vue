@@ -40,7 +40,7 @@ defineProps({
 
 // 触发选择情绪的事件
 const emit = defineEmits(["emotionSelected"]);
-
+const token = localStorage.getItem('token');
 // 可选的情绪列表
 const buttons = ref([
   { icon: happyIcon, text: 'Happy', emotion: 'happy' },
@@ -62,6 +62,10 @@ function selectEmotion(emotion) {
   axios.post('http://localhost:9000/api/whitenoise/recommend', {
     emotion,
     numRecommendations: 2, // 假设推荐 2 个音频
+  }, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   })
       .then(response => {
         console.log('Emotion sent successfully:', response.data);

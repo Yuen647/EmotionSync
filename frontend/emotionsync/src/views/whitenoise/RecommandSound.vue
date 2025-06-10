@@ -88,6 +88,7 @@ import { defineProps, defineEmits } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import {useRouter} from "vue-router";
 import axios from 'axios';
+const token = localStorage.getItem('token');
 import '@/css/WhiteNoise/RecommandSound.css';
 const userStore = useUserStore();
 const router = useRouter();
@@ -223,6 +224,10 @@ function backToController(){
           playDuration: playDuration.value, // 播放时长
           emotion: selectedEmotion,   // 当前选定情绪
           audioName: audio_name // 当前播放的音频名称
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
         .then((response) => {
           console.log('数据发送成功:', response.data);

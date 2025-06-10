@@ -130,7 +130,7 @@ import axios from 'axios';
 
 const userStore = useUserStore();
 const router = useRouter();
-
+const token = localStorage.getItem('token');
 const isFullscreen = ref(false);// 控制是否全屏
 const isUIVisible = ref(true); // 控制 UI 是否可见
 const isDarkMode = ref(false); // 控制深色模式
@@ -394,6 +394,10 @@ function backToController(){
           playDuration: playDuration.value, // 播放时长
           emotion: selectedEmotion,   // 当前选定情绪
           audioName: audio_name // 当前播放的音频名称
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
         .then((response) => {
           console.log('数据发送成功:', response.data);
